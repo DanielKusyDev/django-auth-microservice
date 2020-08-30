@@ -1,8 +1,6 @@
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-DEBUG = True
-ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -22,7 +20,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'dan_crm.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -41,13 +39,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dan_crm.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
