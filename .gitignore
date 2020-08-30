@@ -1,0 +1,9 @@
+.env
+celerybeat-schedule
+rabbit_mq/
+db/
+logs/
+.pytest_cache/
+.idea/
+__pycache__/
+local_settings.py
