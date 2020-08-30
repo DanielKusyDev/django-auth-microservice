@@ -7,7 +7,7 @@ assignees: DanielKusyDev
 
 ---
 
-** User Story**
+**User Story**
 
-** DOD **
+**DOD**
  - Unit tests passed
