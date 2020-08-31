@@ -12,6 +12,7 @@ INSTALLED_APPS = [
 
     # Third-party packages
     'rest_framework',
+    'rules'
 
     # Internal apps
 ]
