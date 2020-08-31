@@ -2,6 +2,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 class PermissionRequiredMixin:
+    permission_required = []
+
     def get_dict_perms(self):
         perms = {key.lower(): val for key, val in self.permission_required.items()}
         perms = perms.get(self.request.method.lower(), ())
