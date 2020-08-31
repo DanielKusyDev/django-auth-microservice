@@ -2,7 +2,7 @@ name: dan-crm
 
 on:
   push:
-    branches: [ master, develop, feature/github_actions_#14 ]
+    branches: [ master, develop ]
   pull_request:
     branches: [ master, develop ]
 
