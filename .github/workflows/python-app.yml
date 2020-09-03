@@ -20,6 +20,8 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Prepare test environment
-      run: cp core/local_settings.example.py core/local_settings.py
-    - name: Test with unittest
+      run: |
+      cp core/local_settings.example.py core/local_settings.py
+      export DJANGO_SETTINGS_MODULE=core.test_settings
+    - name: Test with pytest
       run: pytest
