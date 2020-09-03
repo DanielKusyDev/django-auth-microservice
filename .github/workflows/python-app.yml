@@ -23,5 +23,5 @@ jobs:
       run: |
       cp core/local_settings.example.py core/local_settings.py
       export DJANGO_SETTINGS_MODULE=core.test_settings
-    - name: Test with pytest
+    - name: Test with unittest
       run: pytest
