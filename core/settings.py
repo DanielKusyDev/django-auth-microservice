@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from .local_settings import *
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 INSTALLED_APPS = [
@@ -29,7 +29,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
-WSGI_APPLICATION = 'dan_crm.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -52,6 +52,10 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATICFILES_DIRS = [
+    "apps/static",
+]
 
 # DRF
 REST_FRAMEWORK = {
