@@ -22,6 +22,5 @@ jobs:
     - name: Prepare test environment
       run: |
       cp core/local_settings.example.py core/local_settings.py
-      export DJANGO_SETTINGS_MODULE=core.test_settings
-    - name: Test with unittest
-      run: pytest
+    - name: Test with pytest
+      run: pytest --ds=test_settings
