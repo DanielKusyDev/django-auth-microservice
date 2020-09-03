@@ -28,7 +28,7 @@ class APIView(RulesPermissionRequiredMixin, PermissionRequiredMixin, GenericAPIV
             obj = self.get_object()
         else:
             obj = NO_VALUE
-        if not self.request.user.has_perms(perms, obj):
+        if not request.user.has_perms(perms, obj):
             self.permission_denied(request)
 
 
@@ -37,10 +37,16 @@ class ViewSet(ViewSetMixin, APIView):
         if self.action:
             perms = {key.lower(): val for key, val in self.permission_required.items()}
             perms = perms.get(self.action, ())
+            if isinstance(perms, str):
+                perms = (perms, )
             return perms
         return []
 
 
-class ModelViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin, mixins.ListModelMixin):
+class ModelViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   ViewSet):
     pass

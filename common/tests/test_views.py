@@ -1,6 +1,9 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
+from rules.predicates import NO_VALUE
+
 from common import views
 from common.mixins import PermissionRequiredMixin
 
@@ -10,10 +13,6 @@ def permission_required_mixin(fake_request):
     mixin_instance = PermissionRequiredMixin()
     mixin_instance.request = fake_request
     return mixin_instance
-
-
-def test_permission_required_mixin_dict_perms():
-    pass
 
 
 @pytest.mark.parametrize('perm', ["test", ["test"], ("test",), {"wrong_action": "test"}])
@@ -44,13 +43,40 @@ def test_base_api_view_responses():
     assert success.data is fail.data is None
 
 
-def test_base_api_view_permission_checking():
-    pass
+def test_base_api_view_permission_checking(monkeypatch, fake_request):
+    api_view = views.APIView()
+    api_view.kwargs = {}
+    monkeypatch.setattr(fake_request.user, "has_perms", lambda *args: False)
+    monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
+    with pytest.raises(PermissionDenied):
+        api_view.check_permissions(fake_request)
 
 
-def test_base_viewset_dict_perms():
-    pass
+def test_base_api_view_no_object_found(monkeypatch, fake_request):
+    def mock_has_perms(perms, obj):
+        assert obj == NO_VALUE
+        return True
+
+    api_view = views.APIView()
+    api_view.kwargs = {}
+    monkeypatch.setattr(fake_request.user, "has_perms", mock_has_perms)
+    monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
+    api_view.check_permissions(fake_request)
 
 
-def test_model_viewset_mixins():
-    pass
+@pytest.mark.parametrize("action, perms, expected_perms", [
+    (None, None, []),
+    ("get", {"get": "test"}, ("test", )),
+    ("get", {"post": "test"}, ()),
+])
+def test_base_viewset_dict_perms(action, perms, expected_perms):
+    viewset = views.ViewSet()
+    viewset.action = action
+    viewset.permission_required = perms
+    assert viewset.get_dict_perms() == expected_perms
+
+
+def test_viewset_inheritance_model():
+    assert isinstance(views.APIView(), PermissionRequiredMixin)
+    assert isinstance(views.ViewSet(), views.APIView)
+    assert isinstance(views.ModelViewSet(), views.ViewSet)
