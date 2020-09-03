@@ -1,6 +1,7 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-
+from rest_framework.response import Response
+from common import views
 from common.mixins import PermissionRequiredMixin
 
 
@@ -34,7 +35,13 @@ def test_permission_required_mixin_none_permissions(perm, error, permission_requ
 
 
 def test_base_api_view_responses():
-    pass
+    api_view = views.APIView()
+    success = api_view.success()
+    fail = api_view.fail()
+    assert type(success) == type(fail) == Response
+    assert success.status_code == 200
+    assert fail.status_code == 400
+    assert success.data is fail.data is None
 
 
 def test_base_api_view_permission_checking():

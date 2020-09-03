@@ -13,13 +13,13 @@ class APIView(RulesPermissionRequiredMixin, PermissionRequiredMixin, GenericAPIV
 
     @classmethod
     def success(cls, status=200, data=None):
-        return Response(status, data)
+        return Response(status=status, data=data)
 
     @classmethod
     def fail(cls, status=400, errors=None):
         if errors:
             errors = {"errors": errors}
-        return Response(status, errors)
+        return Response(status=status, data=errors)
 
     def check_permissions(self, request):
         perms = self.get_permission_required()
