@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Prepare test environment
       run: |
-      cp core/local_settings.example.py core/local_settings.py
-      cp deploy/.env.example deploy/.env
+        cp core/local_settings.example.py core/local_settings.py
+        cp deploy/.env.example deploy/.env
 
     - name: Run container
       run: |
