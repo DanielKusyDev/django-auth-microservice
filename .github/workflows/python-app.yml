@@ -14,7 +14,8 @@ jobs:
     - name: Copy settings
       run: |
         cp core/local_settings.example.py core/local_settings.py
-        cp deploy/.env.example deploy/.env
+        cd deploy
+        cp .env.example .env
     - name: Pull images
       run: docker-compose pull
     - uses: satackey/action-docker-layer-caching@v0.0.8
