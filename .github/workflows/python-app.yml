@@ -11,16 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+    - name: Prepare test environment
+      run: |
+      cp core/local_settings.example.py core/local_settings.py
+      cp deploy/.env.example deploy/.env
+
     - name: Run container
       run: |
         cd deploy
         docker-compose build
         docker-compose up -d
-    - name: Prepare test environment
-      run: cp core/local_settings.example.py core/local_settings.py
     - name: Test with pytest
       run: docker exec -it deploy_api_1 pytest
