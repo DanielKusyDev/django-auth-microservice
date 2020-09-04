@@ -24,6 +24,6 @@ jobs:
     - name: Build and run containers
       run: |
         cd deploy
-        docker-compose up --build
+        docker-compose up --build -d
     - name: Test with pytest
       run: docker exec deploy_api_1 pytest
