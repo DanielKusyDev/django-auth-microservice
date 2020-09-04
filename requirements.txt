@@ -1,5 +1,5 @@
 amqp==2.6.1
-asgiref==3.2.10
+asgiref
 attrs==20.1.0
 billiard==3.6.3.0
 celery==4.4.7
