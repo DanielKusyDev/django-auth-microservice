@@ -2,9 +2,7 @@ version: '3.5'
 
 services:
   api:
-    build:
-      context: '../'
-      dockerfile: 'deploy/Dockerfile'
+    image: "danielkusy/dan_crm"
     entrypoint: "deploy/entrypoint.sh"
     volumes:
       - '../:/app'
@@ -41,7 +39,7 @@ services:
       - 'crm_network'
 
   celery:
-    image: 'deploy_api'
+    image: "danielkusy/dan_crm"
     entrypoint: 'celery worker -B -A core.celery.app --loglevel=DEBUG'
     restart: 'always'
     depends_on:

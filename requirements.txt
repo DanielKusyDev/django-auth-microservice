@@ -1,8 +1,9 @@
 amqp==2.6.1
-asgiref==3.2.10
+asgiref
 attrs==20.1.0
 billiard==3.6.3.0
 celery==4.4.7
+coverage==5.2.1
 Django==3.1
 django-filter==2.3.0
 djangorestframework==3.11.1
@@ -15,6 +16,7 @@ psycopg2==2.8.5
 py==1.9.0
 pyparsing==2.4.7
 pytest==6.0.1
+pytest-django==3.9.0
 pytz==2020.1
 rules==2.2
 six==1.15.0
