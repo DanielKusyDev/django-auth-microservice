@@ -25,5 +25,7 @@ jobs:
       run: |
         cd deploy
         docker-compose up --build -d
+        docker ps
+        docker logs deploy_api_1
     - name: Test with pytest
       run: docker exec deploy_api_1 pytest
