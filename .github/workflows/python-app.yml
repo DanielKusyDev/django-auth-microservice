@@ -17,9 +17,6 @@ jobs:
         cp deploy/.env.example deploy/.env
 
     - name: Run container
-      run: |
-        cd deploy
-        docker-compose build
-        docker-compose up -d
+      run: cd deploy && docker-compose up -d
     - name: Test with pytest
       run: docker exec -it deploy_api_1 pytest
