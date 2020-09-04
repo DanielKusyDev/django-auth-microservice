@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -6,6 +7,17 @@ from rules.predicates import NO_VALUE
 
 from common import views
 from common.mixins import PermissionRequiredMixin
+
+
+@pytest.fixture
+def fake_request():
+    class MockRequest:
+        method = "get"
+        user = User()
+        authenticators = None
+        successful_authenticator = None
+
+    return MockRequest()
 
 
 @pytest.fixture
@@ -66,7 +78,7 @@ def test_base_api_view_no_object_found(monkeypatch, fake_request):
 
 @pytest.mark.parametrize("action, perms, expected_perms", [
     (None, None, []),
-    ("get", {"get": "test"}, ("test", )),
+    ("get", {"get": "test"}, ("test",)),
     ("get", {"post": "test"}, ()),
 ])
 def test_base_viewset_dict_perms(action, perms, expected_perms):
