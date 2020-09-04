@@ -1,7 +1,8 @@
-from dataclasses import dataclass
-
+import django
+django.setup()
 import pytest
 from django.contrib.auth.models import User
+
 
 
 @pytest.fixture
