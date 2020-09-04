@@ -18,7 +18,5 @@ jobs:
           POSTGRES_DB: postgres
     steps:
     - uses: actions/checkout@v2
-    - name: Copy settings
-      run: cp core/local_settings.example.py core/local_settings.py
-    - name: Test
-      run: pytest
+    - run: cp core/local_settings.example.py core/local_settings.py
+    - run: pytest
