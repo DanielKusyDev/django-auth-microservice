@@ -16,10 +16,10 @@ jobs:
         cp core/local_settings.example.py core/local_settings.py
         cp deploy/.env.example deploy/.env
     - name: Pull images
-      - run: docker-compose pull
+      run: docker-compose pull
     - uses: satackey/action-docker-layer-caching@v0.0.8
       continue-on-error: true
     - name: Build and run containers
-      - run: docker-compose up --build
+      run: docker-compose up --build
     - name: Test with pytest
       run: docker exec deploy_api_1 pytest
