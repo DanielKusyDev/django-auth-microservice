@@ -13,6 +13,7 @@ INSTALLED_APPS = [
 
     # Third-party packages
     'rest_framework',
+    'rules'
 
     # Internal apps
 ]
@@ -57,7 +58,6 @@ STATICFILES_DIRS = [
     "apps/static",
 ]
 
-
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -71,3 +71,8 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 
+# django-rules
+AUTHENTICATION_BACKENDS = (
+    'rules.permissions.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
