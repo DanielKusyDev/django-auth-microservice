@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def user_data():
     return {
         'username': 'TestUser',
