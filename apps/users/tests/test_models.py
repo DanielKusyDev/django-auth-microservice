@@ -1,30 +1,34 @@
 def test_suspended_to_field_in_user_model():
-    pass
+    assert False
 
 
 def test_creating_user_with_random_password():
-    pass
+    assert False
 
 
 def test_staff_creation():
-    pass
+    assert False
 
 
 def test_staff_listing():
-    pass
+    assert False
 
 
 def test_superusers_listing():
-    pass
+    assert False
 
 
 def test_non_staff_listing():
-    pass
+    assert False
 
 
 def test_non_active_listing():
-    pass
+    assert False
 
 
 def test_active_only_listing():
-    pass
+    assert False
+
+
+def test_time_since_login_property():
+    assert False
