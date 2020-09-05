@@ -29,6 +29,8 @@ def test_staff_creation(MockUser, user_data):
     assert user.is_staff
     with pytest.raises(ValueError):
         MockUser.objects.create_staff(**user_data, is_staff=False)
+
+    with pytest.raises(ValueError):
         MockUser.objects.create_staff(**user_data, is_superuser=True)
 
 @pytest.mark.django_db

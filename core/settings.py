@@ -13,7 +13,7 @@ INSTALLED_APPS = [
 
     # Third-party packages
     'rest_framework',
-    'rules',
+    'rules.apps.AutodiscoverRulesConfig',
 
     # Internal apps
     'apps.users'
