@@ -1,7 +1,11 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+
+from apps.users.services import TimeSinceLoginService
+from common import time_as_dict
 
 
 class UserManager(DjangoUserManager):
@@ -48,4 +52,8 @@ class User(AbstractUser):
 
     @cached_property
     def time_since_login(self):
-        return 0
+        if self.last_login is None:
+            return "-"
+        else:
+            time = time_as_dict(timezone.now() - self.last_login)
+            return TimeSinceLoginService(self.last_login, time).get_last_login()
