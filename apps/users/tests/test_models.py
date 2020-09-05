@@ -27,7 +27,9 @@ def test_creating_user_with_random_password(MockUser, user_data):
 def test_staff_creation(MockUser, user_data):
     user = MockUser.objects.create_staff(**user_data)
     assert user.is_staff
-
+    with pytest.raises(ValueError):
+        MockUser.objects.create_staff(**user_data, is_staff=False)
+        MockUser.objects.create_staff(**user_data, is_superuser=True)
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("manager_method, users_kwargs", [

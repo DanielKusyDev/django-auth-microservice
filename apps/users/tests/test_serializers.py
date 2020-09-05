@@ -20,9 +20,15 @@ def test_valid_registration(user_data, MockUser, monkeypatch):
 
 
 @pytest.mark.django_db
-def test_invalid_registration(user_data):
+def test_password2_validation(user_data):
     serializer = serializers.UserSerializer(data=user_data)
     assert not serializer.is_valid()
+    assert 'password2' in serializer.errors
+
+    user_data['password2'] = user_data['password'] + 'wrongwrong'
+    serializer = serializers.UserSerializer(data=user_data)
+    assert not serializer.is_valid()
+    assert 'password2' in serializer.errors
 
 
 def test_user_serialization(user_data, MockUser):
