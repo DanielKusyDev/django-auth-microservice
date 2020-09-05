@@ -7,5 +7,5 @@ logs/
 .idea/
 __pycache__/
 local_settings.py
-ide_settings.py
+core/ide_settings.py
 static/

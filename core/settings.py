@@ -13,9 +13,10 @@ INSTALLED_APPS = [
 
     # Third-party packages
     'rest_framework',
-    'rules'
+    'rules',
 
     # Internal apps
+    'apps.users'
 ]
 
 MIDDLEWARE = [
@@ -46,6 +47,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = "users.User"
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

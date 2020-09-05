@@ -1,9 +1,11 @@
-def test_suspended_to_field_in_user_model():
-    assert False
+import pytest
+
+from apps.users.models import User
 
 
-def test_creating_user_with_random_password():
-    assert False
+def test_creating_user_with_random_password(user_data, db):
+    assert not User().suspended_to
+    assert not User.objects.create(**user_data).suspended_to
 
 
 def test_staff_creation():
