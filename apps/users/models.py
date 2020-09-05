@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
+from django.utils.functional import cached_property
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserManager(DjangoUserManager):
@@ -44,6 +46,6 @@ class User(AbstractUser):
     suspended_to = models.DateTimeField(verbose_name=_("suspended to"), null=True, blank=True)
     objects = UserManager()
 
-    @property
+    @cached_property
     def time_since_login(self):
         return 0
