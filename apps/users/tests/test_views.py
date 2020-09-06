@@ -35,8 +35,7 @@ def user_viewset():
 @pytest.mark.django_db
 def test_user_viewset_permissions(user_viewset, mock_request, user_data):
     mock_request.user = User.objects.create(**user_data, is_staff=False)
-    with pytest.raises(PermissionDenied):
-        user_viewset.check_permissions(mock_request)
+    assert not user_viewset.check_permissions(mock_request)
 
 
 @pytest.mark.django_db
@@ -64,11 +63,13 @@ def test_user_viewset_update(staff, new_user_data):
     new_mail = 'anotheremail@example.com'
     new_user_data['email'] = new_mail
     for method in factory.put, factory.patch:
-        request = method(path=reverse('users:users-details', kwargs={'pk': user.pk}), data=new_user_data)
+        request = method(path=reverse('users:users-detail', kwargs={'pk': user.pk}),
+                         data=new_user_data,
+                         content_type='application/json')
         request.user = staff
         force_authenticate(request, staff)
-        response = views.UserViewSet.as_view({'put': 'update', 'patch': 'partial_update'})(request)
-        assert 201 == response.status_code
+        response = views.UserViewSet.as_view({'put': 'update', 'patch': 'partial_update'})(request, pk=user.pk)
+        assert 200 == response.status_code
         assert User.objects.get(pk=user.pk).email == new_mail
 
 
@@ -76,9 +77,9 @@ def test_user_viewset_update(staff, new_user_data):
 def test_user_viewset_delete(staff, new_user_data):
     factory = RequestFactory()
     user = User.objects.create(**new_user_data)
-    request = factory.delete(path=reverse('users:users-details', kwargs={'pk': user.pk}))
+    request = factory.delete(path=reverse('users:users-detail', kwargs={'pk': user.pk}))
     request.user = staff
     force_authenticate(request, staff)
-    response = views.User.as_view({'delete': 'destroy'})(request)
-    assert 200 == response.status_code
+    response = views.UserViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
+    assert 204 == response.status_code
     assert not User.objects.filter(pk=user.pk)
