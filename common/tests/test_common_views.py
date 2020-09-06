@@ -9,15 +9,11 @@ from common import views
 from common.mixins import PermissionRequiredMixin
 
 
-@pytest.fixture
-def permission_required_mixin(mock_request):
-    mixin_instance = PermissionRequiredMixin()
-    mixin_instance.request = mock_request
-    return mixin_instance
-
-
 @pytest.mark.parametrize('perm', ["test", ["test"], ("test",), {"wrong_action": "test"}])
-def test_permission_required_mixin(perm, permission_required_mixin):
+def test_permission_required_mixin(perm, mock_request):
+    permission_required_mixin = PermissionRequiredMixin()
+    permission_required_mixin.request = mock_request
+
     permission_required_mixin.permission_required = perm
     permissions = permission_required_mixin.get_permission_required()
     assert isinstance(permissions, tuple) or isinstance(permissions, list)
@@ -27,7 +23,9 @@ def test_permission_required_mixin(perm, permission_required_mixin):
     (None, ImproperlyConfigured),
     ({1: 2}, AttributeError),
 ])
-def test_permission_required_mixin_none_permissions(perm, error, permission_required_mixin):
+def test_permission_required_mixin_none_permissions(perm, error, mock_request):
+    permission_required_mixin = PermissionRequiredMixin()
+    permission_required_mixin.request = mock_request
     permission_required_mixin.permission_required = perm
 
     with pytest.raises(error):
@@ -49,8 +47,7 @@ def test_base_api_view_permission_checking(monkeypatch, mock_request):
     api_view.kwargs = {}
     monkeypatch.setattr(mock_request.user, "has_perms", lambda *args: False)
     monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
-    with pytest.raises(PermissionDenied):
-        api_view.check_permissions(mock_request)
+    assert not api_view.check_permissions(mock_request)
 
 
 def test_base_api_view_no_object_found(monkeypatch, mock_request):
