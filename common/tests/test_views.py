@@ -7,7 +7,6 @@ from rules.predicates import NO_VALUE
 
 from common import views
 from common.mixins import PermissionRequiredMixin
-from common.tests.utils import test_view_accessibility
 
 
 @pytest.fixture
