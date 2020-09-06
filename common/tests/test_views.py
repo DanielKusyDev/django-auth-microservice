@@ -7,23 +7,13 @@ from rules.predicates import NO_VALUE
 
 from common import views
 from common.mixins import PermissionRequiredMixin
+from common.tests.utils import test_view_accessibility
 
 
 @pytest.fixture
-def fake_request():
-    class MockRequest:
-        method = "get"
-        user = User()
-        authenticators = None
-        successful_authenticator = None
-
-    return MockRequest()
-
-
-@pytest.fixture
-def permission_required_mixin(fake_request):
+def permission_required_mixin(mock_request):
     mixin_instance = PermissionRequiredMixin()
-    mixin_instance.request = fake_request
+    mixin_instance.request = mock_request
     return mixin_instance
 
 
@@ -55,25 +45,25 @@ def test_base_api_view_responses():
     assert success.data is fail.data is None
 
 
-def test_base_api_view_permission_checking(monkeypatch, fake_request):
+def test_base_api_view_permission_checking(monkeypatch, mock_request):
     api_view = views.APIView()
     api_view.kwargs = {}
-    monkeypatch.setattr(fake_request.user, "has_perms", lambda *args: False)
+    monkeypatch.setattr(mock_request.user, "has_perms", lambda *args: False)
     monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
     with pytest.raises(PermissionDenied):
-        api_view.check_permissions(fake_request)
+        api_view.check_permissions(mock_request)
 
 
-def test_base_api_view_no_object_found(monkeypatch, fake_request):
+def test_base_api_view_no_object_found(monkeypatch, mock_request):
     def mock_has_perms(perms, obj):
         assert obj == NO_VALUE
         return True
 
     api_view = views.APIView()
     api_view.kwargs = {}
-    monkeypatch.setattr(fake_request.user, "has_perms", mock_has_perms)
+    monkeypatch.setattr(mock_request.user, "has_perms", mock_has_perms)
     monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
-    api_view.check_permissions(fake_request)
+    api_view.check_permissions(mock_request)
 
 
 @pytest.mark.parametrize("action, perms, expected_perms", [

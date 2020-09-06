@@ -2,14 +2,15 @@ from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSetMixin
-from rules.predicates import NO_VALUE
-from rules.contrib.views import PermissionRequiredMixin as RulesPermissionRequiredMixin
 
 from .mixins import PermissionRequiredMixin
 
 
-class APIView(RulesPermissionRequiredMixin, PermissionRequiredMixin, GenericAPIView):
-    lookup_url_kwarg = "pk"
+class APIView(PermissionRequiredMixin, GenericAPIView):
+
+    def check_permissions(self, request):
+        self.request = request
+        return self.has_permission()
 
     @classmethod
     def success(cls, status=200, data=None):
@@ -21,16 +22,6 @@ class APIView(RulesPermissionRequiredMixin, PermissionRequiredMixin, GenericAPIV
             errors = {"errors": errors}
         return Response(status=status, data=errors)
 
-    def check_permissions(self, request):
-        perms = self.get_permission_required()
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        if lookup_url_kwarg in self.kwargs:
-            obj = self.get_object()
-        else:
-            obj = NO_VALUE
-        if not request.user.has_perms(perms, obj):
-            self.permission_denied(request)
-
 
 class ViewSet(ViewSetMixin, APIView):
     def get_dict_perms(self):
@@ -38,7 +29,7 @@ class ViewSet(ViewSetMixin, APIView):
             perms = {key.lower(): val for key, val in self.permission_required.items()}
             perms = perms.get(self.action, ())
             if isinstance(perms, str):
-                perms = (perms, )
+                perms = (perms,)
             return perms
         return []
 

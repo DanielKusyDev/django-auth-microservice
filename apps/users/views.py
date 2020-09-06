@@ -7,7 +7,6 @@ User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
-    queryset = User.objects.non_staff()
+    queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-
     permission_required = 'is_staff'

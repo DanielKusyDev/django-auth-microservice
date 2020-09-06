@@ -17,3 +17,14 @@ def user_data():
 def MockUser(monkeypatch):
     monkeypatch.setattr(User, 'save', lambda *args, **kwargs: None)
     return User
+
+
+@pytest.fixture
+def mock_request():
+    class MockRequest:
+        method = "get"
+        user = User()
+        authenticators = None
+        successful_authenticator = None
+
+    return MockRequest()
