@@ -16,6 +16,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: pass
           POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
