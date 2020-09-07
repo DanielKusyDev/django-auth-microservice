@@ -1,9 +1,11 @@
+from contextlib import nullcontext
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.urls import reverse
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.test import APIClient, force_authenticate
+from rest_framework.test import force_authenticate
 
 from apps.users import views
 
@@ -33,9 +35,17 @@ def user_viewset():
 
 
 @pytest.mark.django_db
-def test_user_viewset_permissions(user_viewset, mock_request, user_data):
+def test_user_viewset_permissions(user_viewset, mock_request, user_data, new_user_data):
     mock_request.user = User.objects.create(**user_data, is_staff=False)
-    assert not user_viewset.check_permissions(mock_request)
+    user_viewset.action = 'list'
+    user_viewset.request = mock_request
+    user_viewset.check_permissions(mock_request)
+    updated_user = User.objects.create(**new_user_data)
+    user_viewset.kwargs = {'pk': updated_user.pk}
+    for method in 'update', 'partial_update':
+        user_viewset.action = method
+        with pytest.raises(PermissionDenied):
+            user_viewset.check_permissions(mock_request)
 
 
 @pytest.mark.django_db
@@ -45,19 +55,20 @@ def test_user_viewset_queryset(user_viewset, user_data):
 
 
 @pytest.mark.django_db
-def test_user_viewset_create(staff, new_user_data):
+def test_user_viewset_create(new_user_data, user_data):
+    user = User.objects.create(**user_data)
     new_user_data['password2'] = new_user_data['password']
     factory = RequestFactory()
     request = factory.post(path=reverse('users:users-list'), data=new_user_data)
-    request.user = staff
-    force_authenticate(request, staff)
+    request.user = user
+    force_authenticate(request, user)
     response = views.UserViewSet.as_view({'post': 'create'})(request)
     assert 201 == response.status_code
     assert User.objects.filter(username=new_user_data['username'])
 
 
 @pytest.mark.django_db
-def test_user_viewset_update(staff, new_user_data):
+def test_user_viewset_update(new_user_data):
     factory = RequestFactory()
     user = User.objects.create_user(**new_user_data)
     new_mail = 'anotheremail@example.com'
@@ -66,8 +77,8 @@ def test_user_viewset_update(staff, new_user_data):
         request = method(path=reverse('users:users-detail', kwargs={'pk': user.pk}),
                          data=new_user_data,
                          content_type='application/json')
-        request.user = staff
-        force_authenticate(request, staff)
+        request.user = user
+        force_authenticate(request, user)
         response = views.UserViewSet.as_view({'put': 'update', 'patch': 'partial_update'})(request, pk=user.pk)
         assert 200 == response.status_code
         assert User.objects.get(pk=user.pk).email == new_mail

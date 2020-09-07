@@ -1,21 +1,18 @@
 import pytest
-from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rules.predicates import NO_VALUE
 
 from common import views
-from common.mixins import PermissionRequiredMixin
 
 
 @pytest.mark.parametrize('perm', ["test", ["test"], ("test",), {"wrong_action": "test"}])
 def test_permission_required_mixin(perm, mock_request):
-    permission_required_mixin = PermissionRequiredMixin()
-    permission_required_mixin.request = mock_request
-
-    permission_required_mixin.permission_required = perm
-    permissions = permission_required_mixin.get_permission_required()
+    api_view = views.APIView()
+    api_view.request = mock_request
+    api_view.permission_required = perm
+    permissions = api_view.get_permission_required()
     assert isinstance(permissions, tuple) or isinstance(permissions, list)
 
 
@@ -23,13 +20,13 @@ def test_permission_required_mixin(perm, mock_request):
     (None, ImproperlyConfigured),
     ({1: 2}, AttributeError),
 ])
-def test_permission_required_mixin_none_permissions(perm, error, mock_request):
-    permission_required_mixin = PermissionRequiredMixin()
-    permission_required_mixin.request = mock_request
-    permission_required_mixin.permission_required = perm
+def test_api_required_permissions(perm, error, mock_request):
+    api_view = views.APIView()
+    api_view.request = mock_request
+    api_view.permission_required = perm
 
     with pytest.raises(error):
-        permission_required_mixin.get_permission_required()
+        api_view.get_permission_required()
 
 
 def test_base_api_view_responses():
@@ -47,7 +44,8 @@ def test_base_api_view_permission_checking(monkeypatch, mock_request):
     api_view.kwargs = {}
     monkeypatch.setattr(mock_request.user, "has_perms", lambda *args: False)
     monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
-    assert not api_view.check_permissions(mock_request)
+    with pytest.raises(PermissionDenied):
+        api_view.check_permissions(mock_request)
 
 
 def test_base_api_view_no_object_found(monkeypatch, mock_request):
@@ -64,8 +62,8 @@ def test_base_api_view_no_object_found(monkeypatch, mock_request):
 
 @pytest.mark.parametrize("action, perms, expected_perms", [
     (None, None, []),
-    ("get", {"get": "test"}, ("test",)),
-    ("get", {"post": "test"}, ()),
+    ("list", {"list": "test"}, ("test",)),
+    ("list", {"create": "test"}, ()),
 ])
 def test_base_viewset_dict_perms(action, perms, expected_perms):
     viewset = views.ViewSet()
@@ -75,6 +73,5 @@ def test_base_viewset_dict_perms(action, perms, expected_perms):
 
 
 def test_viewset_inheritance_model():
-    assert isinstance(views.APIView(), PermissionRequiredMixin)
     assert isinstance(views.ViewSet(), views.APIView)
     assert isinstance(views.ModelViewSet(), views.ViewSet)
