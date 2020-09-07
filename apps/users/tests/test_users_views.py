@@ -20,12 +20,6 @@ def new_user_data():
 
 
 @pytest.mark.django_db
-@pytest.fixture
-def staff(user_data):
-    return User.objects.create_staff(**user_data)
-
-
-@pytest.mark.django_db
 def test_user_viewset_permissions(mock_request, user_data, new_user_data):
     user_viewset = views.UserViewSet()
     mock_request.user = User.objects.create(**user_data, is_staff=False)
@@ -59,9 +53,10 @@ def test_viewsets_querysets(user_data, viewset_class, is_staff):
 @pytest.mark.django_db
 @pytest.mark.parametrize('viewset_class, url_reverse', [
     (views.UserViewSet, 'users:users-list'),
-    (views.StaffViewSet, 'users:users-list'),
+    (views.StaffViewSet, 'users:staff-list'),
 ])
-def test_viewsets_create(staff, new_user_data, viewset_class, url_reverse):
+def test_viewsets_create(user_data, new_user_data, viewset_class, url_reverse):
+    staff = User.objects.create_staff(**user_data)
     new_user_data['password2'] = new_user_data['password']
     factory = RequestFactory()
     request = factory.post(path=reverse(url_reverse), data=new_user_data)
@@ -72,30 +67,45 @@ def test_viewsets_create(staff, new_user_data, viewset_class, url_reverse):
     assert viewset_class().get_queryset().filter(username=new_user_data['username'])
 
 
+@pytest.mark.parametrize('viewset_class, url_reverse, is_staff', [
+    (views.UserViewSet, 'users:users-detail', False),
+    (views.StaffViewSet, 'users:staff-detail', True),
+])
 @pytest.mark.django_db
-def test_viewsets_update(new_user_data):
+def test_viewsets_update(user_data, viewset_class, url_reverse, is_staff):
+    user = User.objects.create(**user_data, is_staff=is_staff)
     factory = RequestFactory()
-    user = User.objects.create_user(**new_user_data)
     new_mail = 'anotheremail@example.com'
-    new_user_data['email'] = new_mail
+    user_data['email'] = new_mail
+
     for method in factory.put, factory.patch:
-        request = method(path=reverse('users:users-detail', kwargs={'pk': user.pk}),
-                         data=new_user_data,
+        request = method(path=reverse(url_reverse, kwargs={'pk': user.pk}),
+                         data=user_data,
                          content_type='application/json')
         request.user = user
         force_authenticate(request, user)
-        response = views.UserViewSet.as_view({'put': 'update', 'patch': 'partial_update'})(request, pk=user.pk)
+        response = viewset_class.as_view({'put': 'update', 'patch': 'partial_update'})(request, pk=user.pk)
         assert 200 == response.status_code
-        assert User.objects.get(pk=user.pk).email == new_mail
+        assert viewset_class().get_queryset().get(pk=user.pk).email == new_mail
 
 
 @pytest.mark.django_db
-def test_user_viewset_delete(staff, new_user_data):
-    factory = RequestFactory()
-    user = User.objects.create(**new_user_data)
-    request = factory.delete(path=reverse('users:users-detail', kwargs={'pk': user.pk}))
-    request.user = staff
-    force_authenticate(request, staff)
+def test_staff_viewset_delete(user_data):
+    user = User.objects.create_staff(**user_data)
+    request = RequestFactory().delete(path=reverse('users:staff-detail', kwargs={'pk': user.pk}))
+    request.user = user
+    force_authenticate(request, user)
+    response = views.StaffViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
+    assert 204 == response.status_code
+    assert not User.objects.filter(pk=user.pk)
+
+
+@pytest.mark.django_db
+def test_user_viewset_delete(user_data):
+    user = User.objects.create_user(**user_data)
+    request = RequestFactory().delete(path=reverse('users:users-detail', kwargs={'pk': user.pk}))
+    request.user = user
+    force_authenticate(request, user)
     response = views.UserViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
     assert 204 == response.status_code
     assert not User.objects.filter(pk=user.pk)

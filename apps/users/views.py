@@ -13,7 +13,7 @@ class UserViewSet(ModelViewSet):
     permission_required = {
         'update': 'is_account_owner',
         'partial_update': 'is_account_owner',
-        'destroy': 'is_staff',
+        'destroy': 'users.delete',
     }
 
 
