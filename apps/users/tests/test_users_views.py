@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.test import force_authenticate
 
-from apps.users import views
+from apps.users import views, serializers
 
 User = get_user_model()
 
@@ -109,3 +109,22 @@ def test_user_viewset_delete(user_data):
     response = views.UserViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
     assert 204 == response.status_code
     assert not User.objects.filter(pk=user.pk)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('is_valid, response_status_code', [(True, 204), (False, 400)])
+def test_password_changing_api_view(monkeypatch, user_data, is_valid, response_status_code):
+    def empty_true_fn(*args, **kwargs): return is_valid
+
+    user = User.objects.create(**user_data)
+    new_data = {'old_password': user_data['password'], 'password2': 'newpasswd', 'password': 'newpasswd'}
+
+    monkeypatch.setattr(serializers.ChangePasswordSerializer, 'is_valid', empty_true_fn)
+    monkeypatch.setattr(serializers.ChangePasswordSerializer, 'save', empty_true_fn)
+    request = RequestFactory().put(path=reverse('users:password_change'),
+                                   data=new_data,
+                                   content_type='application/json')
+    request.user = user
+    force_authenticate(request, user)
+    response = views.ChangePasswordAPIView.as_view()(request)
+    assert response.status_code == response_status_code

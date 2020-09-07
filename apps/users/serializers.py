@@ -47,3 +47,11 @@ class StaffSerializer(UserSerializer):
 
     def _create_user(self, data):
         return User.objects.create_staff(**data)
+
+
+class ChangePasswordSerializer(UserSerializer):
+    old_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('password', 'password2', 'old_password')

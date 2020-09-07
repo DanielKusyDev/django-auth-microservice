@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import IsAdminUser
 
 from apps.users import serializers
-from common.views import ModelViewSet
+from common.views import ModelViewSet, APIView
 
 User = get_user_model()
 
@@ -26,3 +26,12 @@ class StaffViewSet(ModelViewSet):
         'destroy': 'is_account_owner',
     }
     permission_classes = [IsAdminUser]
+
+
+class ChangePasswordAPIView(APIView):
+    def put(self, request, *args, **kwargs):
+        serializer = serializers.ChangePasswordSerializer(data=request.data, instance=request.user)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return self.success(status=204)
+
