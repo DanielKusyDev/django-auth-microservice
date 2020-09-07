@@ -28,5 +28,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Prepare test environment
       run: cp core/local_settings.example.py core/local_settings.py
+    - name: Run migrations
+      run: python manage.py migrate
     - name: Test with pytest
       run: pytest --ds=core.settings
