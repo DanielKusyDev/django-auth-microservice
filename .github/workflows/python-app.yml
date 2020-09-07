@@ -29,4 +29,4 @@ jobs:
     - name: Prepare test environment
       run: cp core/local_settings.example.py core/local_settings.py
     - name: Test with pytest
-      run: pytest --ds=core.local_settings
+      run: pytest
