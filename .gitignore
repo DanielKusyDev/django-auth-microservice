@@ -8,4 +8,5 @@ logs/
 __pycache__/
 local_settings.py
 ide_settings.py
+test_settings.py
 static/
