@@ -9,6 +9,7 @@ from rules.predicates import NO_VALUE
 class APIView(GenericAPIView):
     permission_required = []
     lookup_url_kwarg = "pk"
+    kwargs = {}
 
     def get_dict_perms(self):
         perms = {key.lower(): val for key, val in self.permission_required.items()}

@@ -6,15 +6,19 @@ from rest_framework.exceptions import ValidationError
 User = get_user_model()
 
 
+class UserSerializerMeta:
+    model = User
+    fields = ('id', 'username', 'email', 'password', 'password2')
+    extra_kwargs = {
+        'password': {'write_only': True},
+    }
+
+
 class UserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True, required=False)
 
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'password', 'password2')
-        extra_kwargs = {
-            'password': {'write_only': True},
-        }
+    class Meta(UserSerializerMeta):
+        ...
 
     def validate_password2(self, password2):
         if self.initial_data['password'] != password2:
@@ -31,4 +35,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("password2")
-        return User.objects.create_user(**validated_data)
+        return self._create_user(validated_data)
+
+    def _create_user(self, data):
+        return User.objects.create_user(**data)
+
+
+class StaffSerializer(UserSerializer):
+    class Meta(UserSerializerMeta):
+        ...
+
+    def _create_user(self, data):
+        return User.objects.create_staff(**data)
