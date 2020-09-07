@@ -1,5 +1,3 @@
-from contextlib import nullcontext
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
@@ -27,15 +25,9 @@ def staff(user_data):
     return User.objects.create_staff(**user_data)
 
 
-@pytest.fixture
-def user_viewset():
-    viewset = views.UserViewSet()
-    viewset.kwargs = {}
-    return viewset
-
-
 @pytest.mark.django_db
-def test_user_viewset_permissions(user_viewset, mock_request, user_data, new_user_data):
+def test_user_viewset_permissions(mock_request, user_data, new_user_data):
+    user_viewset = views.UserViewSet()
     mock_request.user = User.objects.create(**user_data, is_staff=False)
     user_viewset.action = 'list'
     user_viewset.request = mock_request
@@ -49,26 +41,39 @@ def test_user_viewset_permissions(user_viewset, mock_request, user_data, new_use
 
 
 @pytest.mark.django_db
-def test_user_viewset_queryset(user_viewset, user_data):
-    user = User.objects.create(**user_data)
-    assert user_viewset.get_queryset().first() == user
+@pytest.mark.parametrize('viewset_class, is_staff', [
+    (views.UserViewSet, True),
+    (views.StaffViewSet, False),
+])
+def test_viewsets_querysets(user_data, viewset_class, is_staff):
+    user_viewset = viewset_class()
+    user = User.objects.create(**user_data, is_staff=is_staff)
+    queryset = user_viewset.get_queryset()
+    assert queryset.count() == 0
+
+    user.is_staff = not is_staff
+    user.save()
+    assert queryset.first() == user
 
 
 @pytest.mark.django_db
-def test_user_viewset_create(new_user_data, user_data):
-    user = User.objects.create(**user_data)
+@pytest.mark.parametrize('viewset_class, url_reverse', [
+    (views.UserViewSet, 'users:users-list'),
+    (views.StaffViewSet, 'users:users-list'),
+])
+def test_viewsets_create(staff, new_user_data, viewset_class, url_reverse):
     new_user_data['password2'] = new_user_data['password']
     factory = RequestFactory()
-    request = factory.post(path=reverse('users:users-list'), data=new_user_data)
-    request.user = user
-    force_authenticate(request, user)
-    response = views.UserViewSet.as_view({'post': 'create'})(request)
+    request = factory.post(path=reverse(url_reverse), data=new_user_data)
+    request.user = staff
+    force_authenticate(request, staff)
+    response = viewset_class.as_view({'post': 'create'})(request)
     assert 201 == response.status_code
-    assert User.objects.filter(username=new_user_data['username'])
+    assert viewset_class().get_queryset().filter(username=new_user_data['username'])
 
 
 @pytest.mark.django_db
-def test_user_viewset_update(new_user_data):
+def test_viewsets_update(new_user_data):
     factory = RequestFactory()
     user = User.objects.create_user(**new_user_data)
     new_mail = 'anotheremail@example.com'

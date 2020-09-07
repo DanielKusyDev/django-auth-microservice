@@ -1,10 +1,14 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rules.predicates import NO_VALUE
 
 from common import views
+
+User = get_user_model()
 
 
 @pytest.mark.parametrize('perm', ["test", ["test"], ("test",), {"wrong_action": "test"}])
@@ -41,9 +45,17 @@ def test_base_api_view_responses():
 
 def test_base_api_view_permission_checking(monkeypatch, mock_request):
     api_view = views.APIView()
-    api_view.kwargs = {}
     monkeypatch.setattr(mock_request.user, "has_perms", lambda *args: False)
     monkeypatch.setattr(api_view, "get_permission_required", lambda *args: "test_perm")
+    with pytest.raises(PermissionDenied):
+        api_view.check_permissions(mock_request)
+
+
+@pytest.mark.django_db
+def test_permission_classes(mock_request, user_data):
+    api_view = views.APIView()
+    api_view.permission_classes = [IsAdminUser]
+    mock_request.user = User.objects.create(**user_data, is_staff=False)
     with pytest.raises(PermissionDenied):
         api_view.check_permissions(mock_request)
 
