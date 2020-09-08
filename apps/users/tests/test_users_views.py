@@ -55,7 +55,7 @@ def test_viewsets_querysets(user_data, viewset_class, is_staff):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('viewset_class, url_reverse', [
-    (views.UserViewSet, 'users:users-list'),
+    (views.UserViewSet, 'users:regular-list'),
     (views.StaffViewSet, 'users:staff-list'),
 ])
 def test_viewsets_create(user_data, new_user_data, viewset_class, url_reverse):
@@ -71,7 +71,7 @@ def test_viewsets_create(user_data, new_user_data, viewset_class, url_reverse):
 
 
 @pytest.mark.parametrize('viewset_class, url_reverse, is_staff', [
-    (views.UserViewSet, 'users:users-detail', False),
+    (views.UserViewSet, 'users:regular-detail', False),
     (views.StaffViewSet, 'users:staff-detail', True),
 ])
 @pytest.mark.django_db
@@ -106,7 +106,7 @@ def test_staff_viewset_delete(user_data):
 @pytest.mark.django_db
 def test_user_viewset_delete(user_data):
     user = User.objects.create_user(**user_data)
-    request = RequestFactory().delete(path=reverse('users:users-detail', kwargs={'pk': user.pk}))
+    request = RequestFactory().delete(path=reverse('users:regular-detail', kwargs={'pk': user.pk}))
     request.user = user
     force_authenticate(request, user)
     response = views.UserViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
@@ -125,10 +125,11 @@ def test_password_changing_api_view(mocker, user_data, is_valid, response_status
     mocker.patch('apps.users.serializers.ChangePasswordSerializer.save', return_value=None)
     mocker.patch('apps.users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
     user = User.objects.create(**user_data)
-    request = RequestFactory().put(path=reverse('users:password_change'), content_type='application/json')
+    request = RequestFactory().put(path=reverse('users:password-detail', kwargs={'pk': user.pk}),
+                                   content_type='application/json')
     request.user = user
     force_authenticate(request, user)
-    response = views.ChangePasswordAPIView.as_view()(request)
+    response = views.PasswordViewSet.as_view({'put': 'update'})(request, pk=user.pk)
     assert response.status_code == response_status_code
     assert bool(response.data) != is_valid
 
