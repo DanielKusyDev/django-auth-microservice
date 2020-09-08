@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from django.contrib.auth.hashers import make_password
 from django.utils.timezone import get_current_timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.users import models
 
