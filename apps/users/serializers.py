@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -39,6 +40,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def _create_user(self, data):
         return User.objects.create_user(**data)
+
+    def update(self, instance, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().update(instance, validated_data)
 
 
 class StaffSerializer(UserSerializer):

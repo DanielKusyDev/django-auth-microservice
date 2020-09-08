@@ -134,10 +134,19 @@ def test_password_changing_api_view(mocker, user_data, is_valid, response_status
 
 
 @pytest.mark.django_db
-def test_password_serialization(user_data):
+def test_change_password_serializer(user_data):
+    passwd = 'test123!@#'
+    user_data['password'] = passwd
     user = User.objects.create_user(**user_data)
-    data = serializers.ChangePasswordSerializer(instance=user).data
-    assert not data
+    assert not serializers.ChangePasswordSerializer(instance=user).data
+    serializer = serializers.ChangePasswordSerializer(instance=user, data={
+        'old_password': passwd,
+        'password': f'new{passwd}',
+        'password2': f'new{passwd}'
+    })
+    assert serializer.is_valid()
+    user = serializer.save()
+    assert user.check_password(f'new{passwd}')
 
 
 @pytest.mark.django_db
