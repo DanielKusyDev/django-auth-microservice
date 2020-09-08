@@ -38,3 +38,7 @@ def test_user_serialization(user_data, MockUser):
     assert serialized_data['email'] == user.email
     assert not serialized_data.get('password')
     assert not serialized_data.get('password2')
+
+
+def test_change_password_serializer_validation():
+    pass

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.hashers import make_password
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -40,6 +41,10 @@ class UserSerializer(serializers.ModelSerializer):
     def _create_user(self, data):
         return User.objects.create_user(**data)
 
+    def update(self, instance, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().update(instance, validated_data)
+
 
 class StaffSerializer(UserSerializer):
     class Meta(UserSerializerMeta):
@@ -47,3 +52,22 @@ class StaffSerializer(UserSerializer):
 
     def _create_user(self, data):
         return User.objects.create_staff(**data)
+
+
+class ChangePasswordSerializer(UserSerializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+
+    def validate_old_password(self, old_password):
+        errors = []
+        if not self.instance.check_password(old_password):
+            errors.append(_('Old password do not match.'))
+        if old_password == self.initial_data['password']:
+            errors.append(_('Your new password must be different from your previous password.'))
+        if errors:
+            raise ValidationError(errors)
+        return old_password
+
+    class Meta:
+        model = User
+        fields = ('password', 'password2', 'old_password')
+        extra_kwargs = {'password': {'write_only': True}}

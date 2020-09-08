@@ -48,7 +48,9 @@ class APIView(GenericAPIView):
         return NO_VALUE
 
     @classmethod
-    def success(cls, status=200, data=None):
+    def success(cls, status=200, data=None, serializer_class=None, instance=None):
+        if serializer_class and instance:
+            data = serializer_class(instance=instance).data
         return Response(status=status, data=data)
 
     @classmethod

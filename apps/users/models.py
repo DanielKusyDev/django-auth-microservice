@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserMa
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.users.services import TimeSinceLoginService
 from common import time_as_dict

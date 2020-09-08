@@ -5,7 +5,11 @@ from apps.users import views
 app_name = 'users'
 
 router = DefaultRouter()
-router.register('users', views.UserViewSet, basename='users')
+router.register('regular', views.UserViewSet, basename='regular')
 router.register('staff', views.StaffViewSet, basename='staff')
+router.register('password', views.PasswordViewSet, basename='password')
 
-urlpatterns = [path('', include(router.urls))]
+urlpatterns = [
+    # ViewSets
+    path('', include(router.urls)),
+]

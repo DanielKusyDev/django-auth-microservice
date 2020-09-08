@@ -1,11 +1,14 @@
+from contextlib import nullcontext
+
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.test import RequestFactory
 from django.urls import reverse
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.test import force_authenticate
 
-from apps.users import views
+from apps.users import views, serializers
 
 User = get_user_model()
 
@@ -52,7 +55,7 @@ def test_viewsets_querysets(user_data, viewset_class, is_staff):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('viewset_class, url_reverse', [
-    (views.UserViewSet, 'users:users-list'),
+    (views.UserViewSet, 'users:regular-list'),
     (views.StaffViewSet, 'users:staff-list'),
 ])
 def test_viewsets_create(user_data, new_user_data, viewset_class, url_reverse):
@@ -68,7 +71,7 @@ def test_viewsets_create(user_data, new_user_data, viewset_class, url_reverse):
 
 
 @pytest.mark.parametrize('viewset_class, url_reverse, is_staff', [
-    (views.UserViewSet, 'users:users-detail', False),
+    (views.UserViewSet, 'users:regular-detail', False),
     (views.StaffViewSet, 'users:staff-detail', True),
 ])
 @pytest.mark.django_db
@@ -103,9 +106,65 @@ def test_staff_viewset_delete(user_data):
 @pytest.mark.django_db
 def test_user_viewset_delete(user_data):
     user = User.objects.create_user(**user_data)
-    request = RequestFactory().delete(path=reverse('users:users-detail', kwargs={'pk': user.pk}))
+    request = RequestFactory().delete(path=reverse('users:regular-detail', kwargs={'pk': user.pk}))
     request.user = user
     force_authenticate(request, user)
     response = views.UserViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
     assert 204 == response.status_code
     assert not User.objects.filter(pk=user.pk)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('is_valid, response_status_code, exc', [
+    (True, 200, ValidationError('test')),
+    (False, 400, nullcontext())
+])
+def test_password_changing_api_view(mocker, user_data, is_valid, response_status_code, exc):
+    if not is_valid:
+        mocker.patch('apps.users.serializers.ChangePasswordSerializer.errors', return_value=['test error'])
+    mocker.patch('apps.users.serializers.ChangePasswordSerializer.save', return_value=None)
+    mocker.patch('apps.users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
+    user = User.objects.create(**user_data)
+    request = RequestFactory().put(path=reverse('users:password-detail', kwargs={'pk': user.pk}),
+                                   content_type='application/json')
+    request.user = user
+    force_authenticate(request, user)
+    response = views.PasswordViewSet.as_view({'put': 'update'})(request, pk=user.pk)
+    assert response.status_code == response_status_code
+    assert bool(response.data) != is_valid
+
+
+@pytest.mark.django_db
+def test_change_password_serializer(user_data):
+    passwd = 'test123!@#'
+    user_data['password'] = passwd
+    user = User.objects.create_user(**user_data)
+    assert not serializers.ChangePasswordSerializer(instance=user).data
+    serializer = serializers.ChangePasswordSerializer(instance=user, data={
+        'old_password': passwd,
+        'password': f'new{passwd}',
+        'password2': f'new{passwd}'
+    })
+    assert serializer.is_valid()
+    user = serializer.save()
+    assert user.check_password(f'new{passwd}')
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('data, expected', [
+    ({'old_password': 'test123!@#', 'password': 'newtest123!@#', 'password2': 'newtest123!@#'}, True),
+    ({'old_password': 'test123!@#', 'password': 'test123!@#', 'password2': 'test123!@#'}, False),
+    ({'password': 'test123!@#', 'password2': 'test123!@#'}, False),
+    ({'old_password': 'surelywrongpassword', 'password': 'test123!@#', 'password2': 'test123!@#'}, False),
+])
+def test_old_password_validation_in_change_password_serializer(data, expected, user_data):
+    user_data['password'] = 'test123!@#'
+    user = User.objects.create_user(**user_data)
+    serializer = serializers.ChangePasswordSerializer(instance=user, data=data)
+    assert serializer.is_valid() == expected
+
+
+def test_if_change_password_serializer_derives_from_user_serializer():
+    # There are tested functionalities in UserSerializer class so all I need to do is to check if
+    # ChangePasswordSerializer share those functionalities
+    assert isinstance(serializers.ChangePasswordSerializer(), serializers.UserSerializer)
