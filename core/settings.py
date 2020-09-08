@@ -19,7 +19,8 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # Internal apps
-    'apps.users'
+    'apps.users',
+    'apps.mails',
 ]
 
 TEMPLATES = [
