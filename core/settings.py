@@ -17,9 +17,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rules.apps.AutodiscoverRulesConfig',
     'drf_yasg',
+    'djmail',
 
     # Internal apps
-    'apps.users'
+    'apps.users',
+    'apps.mails',
 ]
 
 TEMPLATES = [
@@ -65,7 +67,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -75,7 +77,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATICFILES_DIRS = [
-    "apps/static",
+    'apps/static',
 ]
 
 # DRF
@@ -107,3 +109,10 @@ SWAGGER_SETTINGS = {
     },
     'USE_SESSION_AUTH': False
 }
+
+# djmail
+DJMAIL_SUBJECT_TEMPLATE_PROTOTYPE = 'mails/{name}-subject.{ext}'
+DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body={type}.{ext}'
+EMAIL_BACKEND = 'djmail.backends.default.EmailBackend'
+DJMAIL_REAL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DJMAIL_TEMPLATE_EXTENSION = 'html'
