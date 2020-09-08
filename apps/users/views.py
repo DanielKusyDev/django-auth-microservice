@@ -30,8 +30,8 @@ class StaffViewSet(ModelViewSet):
 
 class ChangePasswordAPIView(APIView):
     def put(self, request, *args, **kwargs):
-        serializer = serializers.ChangePasswordSerializer(data=request.data, instance=request.user)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return self.success(status=204)
-
+        _serializer = serializers.ChangePasswordSerializer(data=request.data, instance=request.user)
+        if _serializer.is_valid():
+            _serializer.save()
+            return self.success(status=200)
+        return self.fail(status=400, errors=_serializer.errors)
