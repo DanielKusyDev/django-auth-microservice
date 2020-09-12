@@ -7,9 +7,10 @@ app_name = 'users'
 router = DefaultRouter()
 router.register('regular', views.UserViewSet, basename='regular')
 router.register('staff', views.StaffViewSet, basename='staff')
-router.register('password', views.PasswordViewSet, basename='password')
 
 urlpatterns = [
-    # ViewSets
     path('', include(router.urls)),
+
+    path('/password/<int:pk>/', views.ChangePasswordAPIView.as_view(), name='password'),
+    path('/password/lost/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]

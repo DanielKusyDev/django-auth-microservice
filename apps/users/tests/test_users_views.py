@@ -125,11 +125,11 @@ def test_password_changing_api_view(mocker, user_data, is_valid, response_status
     mocker.patch('apps.users.serializers.ChangePasswordSerializer.save', return_value=None)
     mocker.patch('apps.users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
     user = User.objects.create(**user_data)
-    request = RequestFactory().put(path=reverse('users:password-detail', kwargs={'pk': user.pk}),
+    request = RequestFactory().put(path=reverse('users:password', kwargs={'pk': user.pk}),
                                    content_type='application/json')
     request.user = user
     force_authenticate(request, user)
-    response = views.PasswordViewSet.as_view({'put': 'update'})(request, pk=user.pk)
+    response = views.ChangePasswordAPIView.as_view()(request, pk=user.pk)
     assert response.status_code == response_status_code
     assert bool(response.data) != is_valid
 
