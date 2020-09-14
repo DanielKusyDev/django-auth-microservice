@@ -109,7 +109,7 @@ SWAGGER_SETTINGS = {
 # djmail
 DJMAIL_SUBJECT_TEMPLATE_PROTOTYPE = 'mails/{name}-subject.{ext}'
 DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body={type}.{ext}'
-EMAIL_BACKEND = 'djmail.backends.default.EmailBackend'
+EMAIL_BACKEND = 'djmail.backends.celery.EmailBackend'
 DJMAIL_REAL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DJMAIL_TEMPLATE_EXTENSION = 'html'
 
