@@ -15,6 +15,7 @@ services:
     depends_on:
       - 'postgres'
       - 'rabbit'
+      - 'memcached'
 
   postgres:
     image: 'postgres:alpine'
@@ -52,5 +53,10 @@ services:
     networks:
       - 'crm_network'
 
+  memcached:
+    image: 'memcached'
+    entrypoint: ['memcached', '-m 128']
+    ports:
+      - '{MEMCACHED_HOST_PORT}:11211'
 networks:
   crm_network:
