@@ -11,6 +11,6 @@ router.register('staff', views.StaffViewSet, basename='staff')
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('/password/<int:pk>/', views.ChangePasswordAPIView.as_view(), name='password'),
-    path('/password/lost/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path('password/<int:pk>/', views.ChangePasswordAPIView.as_view(), name='password'),
+    path('password/lost/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
