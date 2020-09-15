@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.signals import reset_password_token_created
 from djmail import template_mail
 
+from apps.mails.models import MailsConfig
+
 
 class BaseTimeSinceLoginService(abc.ABC):
     keys = []
@@ -59,8 +61,9 @@ class TimeSinceLoginService(BaseTimeSinceLoginService):
 
 
 class ResetPasswordService:
+    @staticmethod
     @receiver(reset_password_token_created)
-    def send_email_on_token_creation(self, sender, instance, reset_password_token, *args, **kwargs):
+    def send_email_on_token_creation(sender, instance, reset_password_token, *args, **kwargs):
         """
             Handles password reset tokens
             When a token is created, an e-mail needs to be sent to the user
@@ -74,4 +77,5 @@ class ResetPasswordService:
         url = instance.request.build_absolute_uri(reverse('users:password_reset:reset-password-confirm'))
         url = f'{url}?token={reset_password_token.key}'
         email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
+        email.from_email = MailsConfig.get_solo().email_host_user
         email.send()

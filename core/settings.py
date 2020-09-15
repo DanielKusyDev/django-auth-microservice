@@ -105,13 +105,19 @@ SWAGGER_SETTINGS = {
     },
     'USE_SESSION_AUTH': False
 }
-
 # djmail
 DJMAIL_SUBJECT_TEMPLATE_PROTOTYPE = 'mails/{name}-subject.{ext}'
 DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body={type}.{ext}'
-EMAIL_BACKEND = 'djmail.backends.default.EmailBackend'
+EMAIL_BACKEND = 'apps.mails.backends.EmailBackend'
 DJMAIL_REAL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DJMAIL_TEMPLATE_EXTENSION = 'html'
+DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
+    "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
+    "OPTIONS": {
+        "min_length": 20,
+        "max_length": 30
+    }
+}
 
 # auth
 AUTH_USER_MODEL = 'users.User'
