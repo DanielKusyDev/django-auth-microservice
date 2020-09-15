@@ -74,3 +74,4 @@ class ResetPasswordService:
         url = instance.request.build_absolute_uri(reverse('users:password_reset:reset-password-confirm'))
         url = f'{url}?token={reset_password_token.key}'
         email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
+        email.send()
