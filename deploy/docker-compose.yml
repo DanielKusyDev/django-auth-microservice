@@ -9,12 +9,13 @@ services:
     volumes:
       - '../:/app'
     networks:
-      - 'crm_network'
+      - 'main'
     ports:
       - '${APP_HOST_PORT}:8000'
     depends_on:
       - 'postgres'
       - 'rabbit'
+      - 'memcached'
 
   postgres:
     image: 'postgres:alpine'
@@ -25,7 +26,7 @@ services:
     volumes:
       - './db/:/var/lib/postgresql/data/'
     networks:
-      - 'crm_network'
+      - 'main'
     ports:
       - '${DB_HOST_PORT}:5432'
 
@@ -38,7 +39,7 @@ services:
       - '${RABBITMQ_HOST_PORT}:5672'
       - '${RABBITMQ_MANAGEMENT_PORT}:15672'
     networks:
-      - 'crm_network'
+      - 'main'
 
   celery:
     image: 'deploy_api'
@@ -50,7 +51,15 @@ services:
     volumes:
       - '../:/app'
     networks:
-      - 'crm_network'
+      - 'main'
+
+  memcached:
+    image: 'memcached'
+    entrypoint: ['memcached', '-m 128']
+    ports:
+      - '${MEMCACHED_HOST_PORT}:11211'
+    networks:
+      - 'main'
 
 networks:
-  crm_network:
+  main:
