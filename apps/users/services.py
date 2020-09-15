@@ -1,7 +1,11 @@
 import abc
 import datetime
 
+from django.dispatch import receiver
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django_rest_passwordreset.signals import reset_password_token_created
+from djmail import template_mail
 
 
 class BaseTimeSinceLoginService(abc.ABC):
@@ -52,3 +56,22 @@ class TimeSinceLoginService(BaseTimeSinceLoginService):
 
     def get_message(self):
         return self.last_login.strftime("%d %B %Y")
+
+
+class ResetPasswordService:
+    @receiver(reset_password_token_created)
+    def send_email_on_token_creation(self, sender, instance, reset_password_token, *args, **kwargs):
+        """
+            Handles password reset tokens
+            When a token is created, an e-mail needs to be sent to the user
+            :param sender: View Class that sent the signal
+            :param instance: View Instance that sent the signal
+            :param reset_password_token: Token Model Object
+            :param args:
+            :param kwargs:
+            :return:
+            """
+        url = instance.request.build_absolute_uri(reverse('users:password_reset:reset-password-confirm'))
+        url = f'{url}?token={reset_password_token.key}'
+        email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
+        email.send()

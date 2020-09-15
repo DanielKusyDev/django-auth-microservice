@@ -5,7 +5,7 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAdminUser
 
 from apps.users import serializers
-from common.views import ModelViewSet, ViewSet
+from common.views import ModelViewSet, ViewSet, APIView
 
 User = get_user_model()
 
@@ -31,16 +31,13 @@ class StaffViewSet(ModelViewSet):
     permission_classes = [IsAdminUser]
 
 
-class PasswordViewSet(UpdateModelMixin, ViewSet):
+class ChangePasswordAPIView(APIView):
     queryset = User.objects.all()
     serializer_class = serializers.ChangePasswordSerializer
     http_method_names = ['put']
-    permission_required = {
-        'put': 'is_account_owner',
-        'reset_password': 'is_account_owner'
-    }
+    permission_required = 'is_account_owner'
 
-    def update(self, request, *args, pk=None, **kwargs):
+    def put(self, request, *args, pk=None, **kwargs):
         user = get_object_or_404(queryset=self.queryset, pk=pk)
         _serializer = self.serializer_class(data=request.data, instance=user)
         if _serializer.is_valid():
@@ -48,6 +45,3 @@ class PasswordViewSet(UpdateModelMixin, ViewSet):
             return self.success(status=200)
         return self.fail(status=400, errors=_serializer.errors)
 
-    @action(methods=['put', ], detail=False, url_path='forgotten', url_name='reset')
-    def reset_password(self, request, *args, **kwargs):
-        pass

@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'rules.apps.AutodiscoverRulesConfig',
     'drf_yasg',
     'djmail',
+    'django_rest_passwordreset',
 
     # Internal apps
     'apps.users',
@@ -67,8 +68,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'users.User'
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -76,7 +75,6 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-
 
 # DRF
 REST_FRAMEWORK = {
@@ -114,3 +112,6 @@ DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body={type}.{ext}'
 EMAIL_BACKEND = 'djmail.backends.default.EmailBackend'
 DJMAIL_REAL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DJMAIL_TEMPLATE_EXTENSION = 'html'
+
+# auth
+AUTH_USER_MODEL = 'users.User'
