@@ -10,6 +10,7 @@ User = get_user_model()
 
 class UserViewSet(ModelViewSet):
     serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
     permission_classes = [AllowAny]
     permission_required = {
         'update': 'is_account_owner',
@@ -17,13 +18,6 @@ class UserViewSet(ModelViewSet):
         'destroy': 'users.delete',
     }
     filterset_fields = ('is_staff',)
-
-    def get_queryset(self):
-        user_objects = User.objects
-        is_staff = self.request.query_params.get('is_staff')
-        if is_staff is None:
-            return user_objects.all()
-        return user_objects.staff() if is_staff else user_objects.non_staff()
 
 
 class StaffViewSet(ModelViewSet):
