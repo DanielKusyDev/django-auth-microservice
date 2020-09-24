@@ -1,4 +1,5 @@
 from django.core.exceptions import ImproperlyConfigured
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
@@ -77,4 +78,5 @@ class ModelViewSet(mixins.CreateModelMixin,
                    mixins.DestroyModelMixin,
                    mixins.ListModelMixin,
                    ViewSet):
-    pass
+    filter_backends = (DjangoFilterBackend,)
+

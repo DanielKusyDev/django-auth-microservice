@@ -1,23 +1,29 @@
 from django.contrib.auth import get_user_model
-from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.mixins import UpdateModelMixin
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 
 from apps.users import serializers
-from common.views import ModelViewSet, ViewSet, APIView
+from common.views import ModelViewSet, APIView
 
 User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
-    queryset = User.objects.non_staff()
     serializer_class = serializers.UserSerializer
+    permission_classes = [AllowAny]
     permission_required = {
         'update': 'is_account_owner',
         'partial_update': 'is_account_owner',
         'destroy': 'users.delete',
     }
+    filterset_fields = ('is_staff',)
+
+    def get_queryset(self):
+        user_objects = User.objects
+        is_staff = self.request.query_params.get('is_staff')
+        if is_staff is None:
+            return user_objects.all()
+        return user_objects.staff() if is_staff else user_objects.non_staff()
 
 
 class StaffViewSet(ModelViewSet):
@@ -44,4 +50,3 @@ class ChangePasswordAPIView(APIView):
             _serializer.save()
             return self.success(status=200)
         return self.fail(status=400, errors=_serializer.errors)
-

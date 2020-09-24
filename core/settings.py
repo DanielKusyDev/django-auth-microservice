@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'djmail',
     'django_rest_passwordreset',
     'corsheaders',
+    'django_filters',
 
     # Internal apps
     'apps.users',

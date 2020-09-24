@@ -25,7 +25,7 @@ _patterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Apps
-    path('users/', include('apps.users.urls', namespace='users'))
+    path('', include('apps.users.urls', namespace='users'))
 ]
 
 urlpatterns = [
