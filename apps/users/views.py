@@ -19,16 +19,10 @@ class UserViewSet(ModelViewSet):
     }
     filterset_fields = ('is_staff',)
 
-
-class StaffViewSet(ModelViewSet):
-    queryset = User.objects.staff()
-    serializer_class = serializers.StaffSerializer
-    permission_required = {
-        'update': 'is_account_owner',
-        'partial_update': 'is_account_owner',
-        'destroy': 'is_account_owner',
-    }
-    permission_classes = [IsAdminUser]
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
 
 class ChangePasswordAPIView(APIView):
