@@ -39,19 +39,15 @@ class UserSerializer(serializers.ModelSerializer):
         return self._create_user(validated_data)
 
     def _create_user(self, data):
+        request = self.context.get('request')
+        query_params_available = hasattr(request, 'query_params')
+        if request and query_params_available and request.query_params.get('is_staff'):
+            return User.objects.create_staff(**data)
         return User.objects.create_user(**data)
 
     def update(self, instance, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
         return super().update(instance, validated_data)
-
-
-class StaffSerializer(UserSerializer):
-    class Meta(UserSerializerMeta):
-        ...
-
-    def _create_user(self, data):
-        return User.objects.create_staff(**data)
 
 
 class ChangePasswordSerializer(UserSerializer):

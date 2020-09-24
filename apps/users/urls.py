@@ -5,12 +5,11 @@ from apps.users import views
 app_name = 'users'
 
 router = DefaultRouter()
-router.register('regular', views.UserViewSet, basename='regular')
-router.register('staff', views.StaffViewSet, basename='staff')
+router.register('users', views.UserViewSet, basename='regular')
 
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('password/<int:pk>/', views.ChangePasswordAPIView.as_view(), name='password'),
-    path('password/lost/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path('users/password/<int:pk>/', views.ChangePasswordAPIView.as_view(), name='password'),
+    path('users/password/lost/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
