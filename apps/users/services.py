@@ -1,5 +1,6 @@
 import abc
 import datetime
+import logging
 
 from django.dispatch import receiver
 from django.urls import reverse
@@ -76,6 +77,8 @@ class ResetPasswordService:
             """
         url = instance.request.build_absolute_uri(reverse('users:password_reset:reset-password-confirm'))
         url = f'{url}?token={reset_password_token.key}'
+        logging.info(f'{reset_password_token.user=}')
+        logging.info(f'{reset_password_token.key=}')
         email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
         email.from_email = MailsConfig.get_solo().email_host_user
         email.send()

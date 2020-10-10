@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAdminUser, AllowAny
 
 from apps.users import serializers
 from common.views import ModelViewSet, APIView
@@ -11,7 +10,6 @@ User = get_user_model()
 class UserViewSet(ModelViewSet):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
-    permission_classes = [AllowAny]
     permission_required = {
         'update': 'is_account_owner',
         'partial_update': 'is_account_owner',
