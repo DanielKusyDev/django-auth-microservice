@@ -2,8 +2,8 @@ import abc
 import datetime
 import logging
 
+from django.conf import settings
 from django.dispatch import receiver
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.signals import reset_password_token_created
 from apps.djmail import template_mail
@@ -75,8 +75,7 @@ class ResetPasswordService:
             :param kwargs:
             :return:
             """
-        url = instance.request.build_absolute_uri(reverse('users:password_reset:reset-password-confirm'))
-        url = f'{url}?token={reset_password_token.key}'
+        url = settings.FRONTEND_BASE_URL + settings.FRONTEND_RESET_PASSWORD_URL + f'?token={reset_password_token.key}'
         logging.info(f'{reset_password_token.user=}')
         logging.info(f'{reset_password_token.key=}')
         email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
