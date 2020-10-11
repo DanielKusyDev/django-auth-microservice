@@ -43,7 +43,7 @@ services:
 
   celery:
     image: 'deploy_api'
-    entrypoint: 'celery worker -B -A core.celery.app --loglevel=DEBUG'
+    entrypoint: 'celery worker -B -A core.celery.app --loglevel=INFO'
     restart: 'always'
     depends_on:
       - 'rabbit'

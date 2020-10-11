@@ -1,7 +1,7 @@
 import pytest
 from django.conf import settings
 
-from apps.mails import models
+from apps.djmail import models
 
 
 @pytest.mark.django_db

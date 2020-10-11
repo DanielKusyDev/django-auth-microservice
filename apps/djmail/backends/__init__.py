@@ -1,9 +1,11 @@
-from django.core.mail.backends.console import EmailBackend as DjangoEmailBackend
+# -*- encoding: utf-8 -*-
 
-from apps.mails.models import MailsConfig
+from django.core.mail.backends.smtp import EmailBackend as DjangoEmailBackend
+
+from apps.djmail.models import MailsConfig
 
 
-class EmailBackend(DjangoEmailBackend):
+class RealEmailBackend(DjangoEmailBackend):
     def __init__(self, *args, **kwargs):
         config = MailsConfig.get_solo()
         kwargs.setdefault('host', config.email_host)
