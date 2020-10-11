@@ -1,24 +1,3 @@
-# import pytest
-# from django.core import mail
-# from django.test import override_settings, RequestFactory
-# from rest_framework.views import APIView
-#
-# from apps.users import services
-#
-#
-# @pytest.mark.django_db
-# @override_settings(EMAIL_BACKEND='djmail.backends.default.EmailBackend')
-# def test_sending_reset_password_email(mocker):
-#     service = services.ResetPasswordService()
-#     view = APIView.as_view()
-#     view.request = RequestFactory().request()
-#     view.request.build_absolute_uri = mocker.MagicMock(return_value='testurl')
-#     token = mocker.MagicMock()
-#     token.key = 'testtoken'
-#     token.user.email = 'email@test.com'
-#     service.send_email_on_token_creation(None, view, token)
-#     assert len(mail.outbox) == 1
-
 from __future__ import unicode_literals
 
 import json
@@ -32,9 +11,9 @@ from django.core.mail.backends.base import BaseEmailBackend
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import override_settings
-from djmail import core, exceptions, utils
-from djmail.models import Message
-from djmail.template_mail import MagicMailBuilder, TemplateMail, make_email
+from apps.djmail import core, exceptions, utils
+from apps.djmail.models import Message
+from apps.djmail.template_mail import MagicMailBuilder, TemplateMail, make_email
 
 
 class BrokenEmailBackend(BaseEmailBackend):
@@ -56,7 +35,7 @@ class EmailTestCaseMixin(object):
 
 class TestEmailSending(EmailTestCaseMixin, TestCase):
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email(self):
         self.email.send()
@@ -64,7 +43,7 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.count(), 1)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.async.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.async.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
         DJMAIL_SEND_ASYNC=True)
     def test_async_send_email(self):
@@ -77,8 +56,8 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.count(), 1)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
-        DJMAIL_REAL_BACKEND='apps.mails.tests.test_djmail.BrokenEmailBackend')
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
+        DJMAIL_REAL_BACKEND='apps.djmail.tests.test_djmail.BrokenEmailBackend')
     def test_failing_simple_send_email(self):
         number_sent_emails = self.email.send()
 
@@ -88,8 +67,8 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.get().status, Message.STATUS_FAILED)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.async.EmailBackend',
-        DJMAIL_REAL_BACKEND='apps.mails.tests.test_djmail.BrokenEmailBackend')
+        EMAIL_BACKEND='apps.djmail.backends.async.EmailBackend',
+        DJMAIL_REAL_BACKEND='apps.djmail.tests.test_djmail.BrokenEmailBackend')
     def test_failing_async_send_email(self):
         future = self.email.send()
         future.result()
@@ -99,7 +78,7 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.get().status, Message.STATUS_FAILED)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.celery.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.celery.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
         CELERY_TASK_ALWAYS_EAGER=True
     )
@@ -110,8 +89,8 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.count(), 1)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.celery.EmailBackend',
-        DJMAIL_REAL_BACKEND='apps.mails.tests.test_djmail.BrokenEmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.celery.EmailBackend',
+        DJMAIL_REAL_BACKEND='apps.djmail.tests.test_djmail.BrokenEmailBackend',
         CELERY_TASK_ALWAYS_EAGER=True)
     def test_failing_async_send_email_with_celery(self):
         result = self.email.send()
@@ -121,8 +100,8 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.get().status, Message.STATUS_FAILED)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.celery.EmailBackend',
-        DJMAIL_REAL_BACKEND='apps.mails.tests.test_djmail.BrokenEmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.celery.EmailBackend',
+        DJMAIL_REAL_BACKEND='apps.djmail.tests.test_djmail.BrokenEmailBackend',
         CELERY_TASK_ALWAYS_EAGER=True)
     def test_failing_retry_send_01(self):
         message_model = Message.from_email_message(self.email)
@@ -136,8 +115,8 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(message_model_2.retry_count, 2)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.celery.EmailBackend',
-        DJMAIL_REAL_BACKEND='apps.mails.tests.test_djmail.BrokenEmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.celery.EmailBackend',
+        DJMAIL_REAL_BACKEND='apps.djmail.tests.test_djmail.BrokenEmailBackend',
         DJMAIL_MAX_RETRY_NUMBER=2,
         CELERY_TASK_ALWAYS_EAGER=True)
     def test_failing_retry_send_02(self):
@@ -155,7 +134,7 @@ class TestEmailSending(EmailTestCaseMixin, TestCase):
 
 class TestTemplateEmailSending(EmailTestCaseMixin, TestCase):
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email_1(self):
         class SimpleTemplateMail(TemplateMail):
@@ -172,7 +151,7 @@ class TestTemplateEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(m.body, u'<b>Mail1: foo</b>\n')
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email_2(self):
         class SimpleTemplateMail(TemplateMail):
@@ -190,7 +169,7 @@ class TestTemplateEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(m.alternatives, [(u'<b>Body</b>\n', 'text/html')])
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email_with_magic_builder_1(self):
         mails = MagicMailBuilder()
@@ -202,17 +181,17 @@ class TestTemplateEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.count(), 1)
 
         self.assertEqual(email.subject, u'Subject2: foo')
-        self.assertEqual(email.body, u"body\n")
+        self.assertEqual(email.body, u'body\n')
         self.assertEqual(email.alternatives, [(u'<b>Body</b>\n', 'text/html')])
 
     @override_settings(
-        EMAIL_BACKEND="djmail.backends.default.EmailBackend",
-        DJMAIL_REAL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
+        DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email_with_magic_builder_1_with_extra_kwargs(self):
         mails = MagicMailBuilder()
 
         email = mails.test_email2(
-            "to@example.com", {"name": "foo"}, from_email="no-reply@test.com")
+            'to@example.com', {'name': 'foo'}, from_email='no-reply@test.com')
         email.send()
 
         self.assertEqual(len(mail.outbox), 1)
@@ -250,7 +229,7 @@ class TestTemplateEmailSending(EmailTestCaseMixin, TestCase):
         self.assertEqual(email3.content_subtype, 'plain')
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email_with_magic_builder_1_with_low_priority(self):
         mails = MagicMailBuilder()
@@ -295,7 +274,7 @@ class SerializationEmailTests(EmailTestCaseMixin, TestCase):
         self.assertEmailEqual(self.email, email_bis)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_simple_send_email_with_magic_builder_1(self):
         mails = MagicMailBuilder()
@@ -320,7 +299,7 @@ class CleanupManagementCommand(EmailTestCaseMixin, TestCase):
         self.old_log.save()
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_delete_old_message_with_default_days(self):
         self.email.send()
@@ -331,7 +310,7 @@ class CleanupManagementCommand(EmailTestCaseMixin, TestCase):
         self.assertEqual(Message.objects.count(), 1)
 
     @override_settings(
-        EMAIL_BACKEND='djmail.backends.default.EmailBackend',
+        EMAIL_BACKEND='apps.djmail.backends.default.EmailBackend',
         DJMAIL_REAL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_retain_old_message_with_specified_days(self):
         self.email.send()

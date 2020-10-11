@@ -17,20 +17,19 @@ INSTALLED_APPS = [
     'rest_framework',
     'rules.apps.AutodiscoverRulesConfig',
     'drf_yasg',
-    'djmail',
     'django_rest_passwordreset',
     'corsheaders',
     'django_filters',
 
     # Internal apps
     'apps.users',
-    'apps.mails',
+    'apps.djmail',
 ]
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'APP_DIRS': True,
+        'DIRS': [BASE_DIR / 'templates'],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -124,12 +123,15 @@ SWAGGER_SETTINGS = {
     },
     'USE_SESSION_AUTH': False
 }
+
 # djmail
+EMAIL_BACKEND = 'apps.djmail.backends.celery.EmailBackend'
 DJMAIL_SUBJECT_TEMPLATE_PROTOTYPE = 'mails/{name}-subject.{ext}'
-DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body={type}.{ext}'
-EMAIL_BACKEND = 'djmail.backends.celery.EmailBackend'
-DJMAIL_REAL_BACKEND = 'apps.mails.backends.EmailBackend'
+DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body-{type}.{ext}'
+DJMAIL_REAL_BACKEND = 'apps.djmail.backends.RealEmailBackend'
 DJMAIL_TEMPLATE_EXTENSION = 'html'
+
+# RESET_PASSWORD
 DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
     "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
     "OPTIONS": {

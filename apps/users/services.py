@@ -6,9 +6,9 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.signals import reset_password_token_created
-from djmail import template_mail
+from apps.djmail import template_mail
 
-from apps.mails.models import MailsConfig
+from apps.djmail.models import MailsConfig
 
 
 class BaseTimeSinceLoginService(abc.ABC):
@@ -82,3 +82,4 @@ class ResetPasswordService:
         email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
         email.from_email = MailsConfig.get_solo().email_host_user
         email.send()
+
