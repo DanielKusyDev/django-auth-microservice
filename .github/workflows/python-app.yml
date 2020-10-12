@@ -15,7 +15,7 @@ jobs:
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: pass
-          POSTGRES_DB: postgres
+          POSTGRES_DB: dan-auth
         ports:
           - 5432:5432
     steps:
