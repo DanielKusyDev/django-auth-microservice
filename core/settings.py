@@ -1,10 +1,23 @@
+import datetime
 import os
 from pathlib import Path
 
-from .local_settings import *
-
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+DEBUG = True
+SECRET_KEY = 'secret'
+ALLOWED_HOSTS = ['*']
 
+# Databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dan-auth',
+        'USER': 'root',
+        'PASSWORD': 'pass',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 INSTALLED_APPS = [
     # Django stuff
     'django.contrib.auth',
@@ -21,24 +34,14 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
 
-    # Internal apps
-    'apps.users',
-    'apps.djmail',
+    'users',
 ]
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-            ],
-        },
-    },
+    }
 ]
 
 MIDDLEWARE = [
@@ -87,14 +90,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8080'
 ]
 
-# memcached
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'memcached:11211',
-    }
-}
-
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -125,13 +120,6 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False
 }
 
-# djmail
-EMAIL_BACKEND = 'apps.djmail.backends.celery.EmailBackend'
-DJMAIL_SUBJECT_TEMPLATE_PROTOTYPE = 'mails/{name}-subject.{ext}'
-DJMAIL_BODY_TEMPLATE_PROTOTYPE = 'mails/{name}-body-{type}.{ext}'
-DJMAIL_REAL_BACKEND = 'apps.djmail.backends.RealEmailBackend'
-DJMAIL_TEMPLATE_EXTENSION = 'html'
-
 # RESET_PASSWORD
 DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
     "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
@@ -143,3 +131,12 @@ DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
 
 # auth
 AUTH_USER_MODEL = 'users.User'
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=3),
+}
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

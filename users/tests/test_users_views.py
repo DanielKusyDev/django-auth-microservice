@@ -8,7 +8,7 @@ from django.urls import reverse
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.test import force_authenticate
 
-from apps.users import views, serializers
+from users import views, serializers
 
 User = get_user_model()
 
@@ -86,9 +86,9 @@ def test_user_viewset_delete(user_data):
 ])
 def test_password_changing_api_view(mocker, user_data, is_valid, response_status_code, exc):
     if not is_valid:
-        mocker.patch('apps.users.serializers.ChangePasswordSerializer.errors', return_value=['test error'])
-    mocker.patch('apps.users.serializers.ChangePasswordSerializer.save', return_value=None)
-    mocker.patch('apps.users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
+        mocker.patch('users.serializers.ChangePasswordSerializer.errors', return_value=['test error'])
+    mocker.patch('users.serializers.ChangePasswordSerializer.save', return_value=None)
+    mocker.patch('users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
     user = User.objects.create(**user_data)
     request = RequestFactory().put(path=reverse('users:password', kwargs={'pk': user.pk}),
                                    content_type='application/json')

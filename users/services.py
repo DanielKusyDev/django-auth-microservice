@@ -1,14 +1,9 @@
 import abc
 import datetime
-import logging
 
-from django.conf import settings
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.signals import reset_password_token_created
-from apps.djmail import template_mail
-
-from apps.djmail.models import MailsConfig
 
 
 class BaseTimeSinceLoginService(abc.ABC):
@@ -75,10 +70,5 @@ class ResetPasswordService:
             :param kwargs:
             :return:
             """
-        url = settings.FRONTEND_BASE_URL + settings.FRONTEND_RESET_PASSWORD_URL + f'?token={reset_password_token.key}'
-        logging.info(f'{reset_password_token.user=}')
-        logging.info(f'{reset_password_token.key=}')
-        email = template_mail.MagicMailBuilder().reset_password(reset_password_token.user.email, {'url': url})
-        email.from_email = MailsConfig.get_solo().email_host_user
-        email.send()
+        pass
 

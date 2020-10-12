@@ -1,2 +1,0 @@
-class TemplateNotFound(RuntimeError):
-    pass

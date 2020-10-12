@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.hashers import check_password
 
-from apps.users import serializers, models
+from users import serializers
 
 
 @pytest.mark.django_db
