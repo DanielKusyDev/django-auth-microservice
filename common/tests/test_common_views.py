@@ -51,15 +51,6 @@ def test_base_api_view_permission_checking(monkeypatch, mock_request):
         api_view.check_permissions(mock_request)
 
 
-@pytest.mark.django_db
-def test_permission_classes(mock_request, user_data):
-    api_view = views.APIView()
-    api_view.permission_classes = [IsAdminUser]
-    mock_request.user = User.objects.create(**user_data, is_staff=False)
-    with pytest.raises(PermissionDenied):
-        api_view.check_permissions(mock_request)
-
-
 def test_base_api_view_no_object_found(monkeypatch, mock_request):
     def mock_has_perms(perms, obj):
         assert obj == NO_VALUE
