@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
+from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPasswordConfirm
 from rest_framework.generics import get_object_or_404
-from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPasswordConfirm, ResetPasswordValidateToken
 from rest_framework.permissions import AllowAny
 
 from apps.users import serializers
@@ -13,6 +13,7 @@ class UserViewSet(ModelViewSet):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
     permission_required = {
+        'create': 'allow_any',
         'update': 'is_account_owner',
         'partial_update': 'is_account_owner',
         'destroy': 'users.delete',
@@ -40,18 +41,17 @@ class ChangePasswordAPIView(APIView):
         return self.fail(status=400, errors=_serializer.errors)
 
 
-class ResetPasswordConfirmationApiView(ResetPasswordConfirm):
-    permission_classes = [AllowAny]
+class ResetPasswordApiView(APIView, ResetPasswordConfirm):
+    http_method_names = ['put']
+
+    def put(self, request, *args, **kwargs):
+        response = self.post(request, *args, **kwargs)
+        return response
 
 
-class ResetPasswordTokenValidationApiView(ResetPasswordValidateToken):
-    permission_classes = [AllowAny]
+class ResetPasswordTokenApiView(APIView, ResetPasswordRequestToken):
+    pass
 
 
-class ResetPasswordTokenRequestApiView(ResetPasswordRequestToken):
-    permission_classes = [AllowAny]
-
-
-reset_password_validate_token = ResetPasswordTokenValidationApiView.as_view()
-reset_password_confirm = ResetPasswordConfirmationApiView.as_view()
-reset_password_request_token = ResetPasswordTokenRequestApiView.as_view()
+reset_password_request_token = ResetPasswordTokenApiView.as_view()
+reset_password_confirm = ResetPasswordApiView.as_view()

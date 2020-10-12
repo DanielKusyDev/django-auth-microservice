@@ -8,7 +8,7 @@ from rules.predicates import NO_VALUE
 
 
 class APIView(GenericAPIView):
-    permission_required = []
+    permission_required = ['allow_any']
     lookup_url_kwarg = "pk"
     kwargs = {}
 
@@ -36,7 +36,6 @@ class APIView(GenericAPIView):
         obj = self.get_object()
         if not request.user.has_perms(perms, obj):
             self.permission_denied(request)
-        super().check_permissions(request)
 
     def get_object(self):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
