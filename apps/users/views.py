@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPasswordConfirm
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 
+from apps.swagger_utils import users_id_schema
 from apps.users import serializers
 from common.views import ModelViewSet, APIView
 
@@ -17,7 +21,7 @@ class UserViewSet(ModelViewSet):
         'partial_update': 'is_account_owner',
         'destroy': 'users.delete',
     }
-    filterset_fields = ('is_staff',)
+    filterset_fields = ('groups__name', )
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -28,6 +32,19 @@ class UserViewSet(ModelViewSet):
 class StaffViewSet(UserViewSet):
     queryset = User.objects.staff()
     permission_required = 'is_staff'
+
+
+class GroupViewSet(ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = serializers.GroupSerializer
+
+    @swagger_auto_schema(method='post', request_body=users_id_schema)
+    @action(methods=['post'], detail=True)
+    def users(self, request, *args, **kwargs):
+        group = self.get_object()
+        for pk in request.data:
+            group.user_set.add(pk)
+        return self.success(status=201)
 
 
 class ChangePasswordAPIView(APIView):

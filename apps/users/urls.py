@@ -8,6 +8,7 @@ app_name = 'users'
 router = DefaultRouter()
 router.register('users', views.UserViewSet, basename='users')
 router.register('staff', views.StaffViewSet, basename='staff')
+router.register('groups', views.GroupViewSet, basename='groups')
 
 password_patterns = [
     path('password/<int:pk>/', views.ChangePasswordAPIView.as_view(), name='password'),
