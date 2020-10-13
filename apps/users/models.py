@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from users.services import TimeSinceLoginService
+from apps.users import TimeSinceLoginService
 from common import time_as_dict
 
 

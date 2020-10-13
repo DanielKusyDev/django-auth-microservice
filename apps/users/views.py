@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPasswordConfirm
 from rest_framework.generics import get_object_or_404
 
-from users import serializers
+from apps.users import serializers
 from common.views import ModelViewSet, APIView
 
 User = get_user_model()

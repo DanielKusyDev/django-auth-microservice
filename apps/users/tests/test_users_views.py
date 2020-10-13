@@ -8,7 +8,7 @@ from django.urls import reverse
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.test import force_authenticate
 
-from users import views, serializers
+from apps.users import views, serializers
 
 User = get_user_model()
 
