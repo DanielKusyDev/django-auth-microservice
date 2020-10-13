@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import make_password
 from django.utils.timezone import get_current_timezone
 from django.utils.translation import gettext_lazy as _
 
-from users import models
+from apps.users import models
 
 
 def test_user_model_default_values(user_data, MockUser):

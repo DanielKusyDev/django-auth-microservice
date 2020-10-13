@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -67,3 +68,9 @@ class ChangePasswordSerializer(UserSerializer):
         model = User
         fields = ('password', 'password2', 'old_password')
         extra_kwargs = {'password': {'write_only': True}}
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('name', )
