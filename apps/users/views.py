@@ -10,7 +10,7 @@ User = get_user_model()
 
 class UserViewSet(ModelViewSet):
     serializer_class = serializers.UserSerializer
-    queryset = User.objects.all()
+    queryset = User.objects.non_staff()
     permission_required = {
         'create': 'allow_any',
         'update': 'is_account_owner',
@@ -23,6 +23,11 @@ class UserViewSet(ModelViewSet):
         context = super().get_serializer_context()
         context.update({'request': self.request})
         return context
+
+
+class StaffViewSet(UserViewSet):
+    queryset = User.objects.staff()
+    permission_required = 'is_staff'
 
 
 class ChangePasswordAPIView(APIView):
