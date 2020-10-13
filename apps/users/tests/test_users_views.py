@@ -2,6 +2,7 @@ from contextlib import nullcontext
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory
 from django.urls import reverse
@@ -37,12 +38,13 @@ def test_user_viewset_permissions(mock_request, user_data, new_user_data):
         with pytest.raises(PermissionDenied):
             user_viewset.check_permissions(mock_request)
 
+
 @pytest.mark.django_db
 def test_viewsets_create(user_data, new_user_data):
     staff = User.objects.create_staff(**user_data)
     new_user_data['password2'] = new_user_data['password']
     factory = RequestFactory()
-    request = factory.post(path=reverse("users:regular-list"), data=new_user_data)
+    request = factory.post(path=reverse("users:users-list"), data=new_user_data)
     request.user = staff
     force_authenticate(request, staff)
     response = views.UserViewSet.as_view({'post': 'create'})(request)
@@ -58,7 +60,7 @@ def test_viewsets_update(user_data):
     user_data['email'] = new_mail
 
     for method in factory.put, factory.patch:
-        request = method(path=reverse("users:regular-detail", kwargs={'pk': user.pk}),
+        request = method(path=reverse("users:users-detail", kwargs={'pk': user.pk}),
                          data=user_data,
                          content_type='application/json')
         request.user = user
@@ -71,7 +73,7 @@ def test_viewsets_update(user_data):
 @pytest.mark.django_db
 def test_user_viewset_delete(user_data):
     user = User.objects.create_user(**user_data)
-    request = RequestFactory().delete(path=reverse('users:regular-detail', kwargs={'pk': user.pk}))
+    request = RequestFactory().delete(path=reverse('users:users-detail', kwargs={'pk': user.pk}))
     request.user = user
     force_authenticate(request, user)
     response = views.UserViewSet.as_view({'delete': 'destroy'})(request, pk=user.pk)
@@ -86,9 +88,9 @@ def test_user_viewset_delete(user_data):
 ])
 def test_password_changing_api_view(mocker, user_data, is_valid, response_status_code, exc):
     if not is_valid:
-        mocker.patch('users.serializers.ChangePasswordSerializer.errors', return_value=['test error'])
-    mocker.patch('users.serializers.ChangePasswordSerializer.save', return_value=None)
-    mocker.patch('users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
+        mocker.patch('apps.users.serializers.ChangePasswordSerializer.errors', return_value=['test error'])
+    mocker.patch('apps.users.serializers.ChangePasswordSerializer.save', return_value=None)
+    mocker.patch('apps.users.serializers.ChangePasswordSerializer.is_valid', return_value=is_valid)
     user = User.objects.create(**user_data)
     request = RequestFactory().put(path=reverse('users:password', kwargs={'pk': user.pk}),
                                    content_type='application/json')
