@@ -1,9 +1,14 @@
 import abc
 import datetime
+import logging
 
+from django.conf import settings
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.signals import reset_password_token_created
+
+from apps.users.api_services import MailingApiService
 
 
 class BaseTimeSinceLoginService(abc.ABC):
@@ -70,5 +75,11 @@ class ResetPasswordService:
             :param kwargs:
             :return:
             """
-        pass
+        logging.info("Received reset password signal. Sending email...")
+        url = settings.FRONTEND_URL + settings.FRONTEND_RESET_PASSWORD_PATH + f'?token={reset_password_token.key}'
+        message = render_to_string('users/reset_password_mail.html', context={'url': url})
+        MailingApiService.reset_password(to=reset_password_token.user.email, body=message)
+
+
+
 

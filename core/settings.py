@@ -136,6 +136,14 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=3),
 }
 
+# Micro-services
+MAILING_URL = os.getenv('MAILING_URL', 'http://127.0.0.1:7200')
+MAILING_BASE_PATH = '/api/v1'
+
+# Frontend
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://127.0.0.1:8080')
+FRONTEND_RESET_PASSWORD_PATH = '/email/confirm'
+
 try:
     from .local_settings import *
 except ImportError:
