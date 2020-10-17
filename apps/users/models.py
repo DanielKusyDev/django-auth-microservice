@@ -48,6 +48,7 @@ class UserManager(DjangoUserManager):
 
 class User(AbstractUser):
     suspended_to = models.DateTimeField(verbose_name=_("suspended to"), null=True, blank=True)
+    email = models.EmailField(_('email address'), blank=False, unique=True)
     objects = UserManager()
 
     @cached_property
