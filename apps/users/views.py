@@ -21,7 +21,7 @@ class UserViewSet(ModelViewSet):
         'partial_update': 'is_account_owner',
         'destroy': 'users.delete',
     }
-    filterset_fields = ('groups__name', )
+    filterset_fields = ('groups__name',)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -71,7 +71,13 @@ class ResetPasswordApiView(APIView, ResetPasswordConfirm):
 
 
 class ResetPasswordTokenApiView(APIView, ResetPasswordRequestToken):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.redirect_url = ''
+
+    def post(self, *args, **kwargs):
+        self.redirect_url = self.request.data.get('redirect_url')
+        return super().post(*args, **kwargs)
 
 
 reset_password_request_token = ResetPasswordTokenApiView.as_view()

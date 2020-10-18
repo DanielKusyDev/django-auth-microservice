@@ -76,7 +76,7 @@ class ResetPasswordService:
             :return:
             """
         logging.info("Received reset password signal. Sending email...")
-        url = settings.FRONTEND_URL + settings.FRONTEND_RESET_PASSWORD_PATH + f'?token={reset_password_token.key}'
+        url = f'{instance.redirect_url}?token={reset_password_token.key}'
         message = render_to_string('users/reset_password_mail.html', context={'url': url})
         MailingApiService.reset_password(to=reset_password_token.user.email, body=message)
 
