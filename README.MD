@@ -1,4 +1,6 @@
-# dan-auth
+# django-auth-microservice
+
+Micro-service designed to perform identification, authentication and authorization.
 
 ## Prerequisites
  - Python 3.8
