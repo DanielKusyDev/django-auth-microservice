@@ -31,7 +31,7 @@ jobs:
     - name: Run migrations and tests
       env:
         SECRET_KEY: secret
-        ALLOWED_HOSTS: *
+        ALLOWED_HOSTS: 127.0.0.1
         DB_NAME: dan-auth
         DB_USER: root
         DB_PASSWORD: pass
