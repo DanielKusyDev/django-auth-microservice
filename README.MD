@@ -28,3 +28,7 @@ python manage.py migrate
  ```
 python manage.py runserver 0.0.0.0:8000
 ```
+
+ - Visit swagger page at `/docs` to find all endpoints
+
+![](https://imgur.com/VBPD6yE.png)
