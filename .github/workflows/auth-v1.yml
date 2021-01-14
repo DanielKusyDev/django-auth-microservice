@@ -29,7 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run migrations and tests
-      env: |
+      env:
         SECRET_KEY=secret
         ALLOWED_HOSTS=*
         DB_NAME=dan-auth
