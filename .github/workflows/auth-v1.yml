@@ -30,13 +30,13 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run migrations and tests
       env:
-        SECRET_KEY=secret
-        ALLOWED_HOSTS=*
-        DB_NAME=dan-auth
-        DB_USER=root
-        DB_PASSWORD=pass
-        DB_HOST=127.0.0.1
-        DB_PORT=5432
+        SECRET_KEY: secret
+        ALLOWED_HOSTS: *
+        DB_NAME: dan-auth
+        DB_USER: root
+        DB_PASSWORD: pass
+        DB_HOST: 127.0.0.1
+        DB_PORT: 5432
       run: |
         python manage.py migrate
         pytest --ds=core.settings
