@@ -15,7 +15,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 MAILING_URL = os.getenv('MAILING_URL', os.getenv("MAILING_URL"))
-
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS").split(",")
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # Databases
@@ -96,10 +96,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-# CORS
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8080'
-]
 
 # DRF
 REST_FRAMEWORK = {
