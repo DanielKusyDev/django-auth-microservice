@@ -1,21 +1,32 @@
 import datetime
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# ENVIRONMENT VARIABLES
+DEBUG = os.getenv("DEBUG", False) == "true"
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+MAILING_URL = os.getenv('MAILING_URL', os.getenv("MAILING_URL"))
+
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-DEBUG = True
-SECRET_KEY = 'secret'
-ALLOWED_HOSTS = ['*']
-
 # Databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dan-auth',
-        'USER': 'root',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 INSTALLED_APPS = [
@@ -138,9 +149,7 @@ SIMPLE_JWT = {
 }
 
 # Micro-services
-MAILING_URL = os.getenv('MAILING_URL', 'http://127.0.0.1:7200')
 MAILING_BASE_PATH = '/api/v1'
-
 
 try:
     from .local_settings import *

@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 schema_view = get_schema_view(
     info=openapi.Info(
-        title="Dan Auth Api",
+        title="Django authorization API",
         default_version='v1',
         contact=openapi.Contact(email="daniel.kusy97@gmail.com"),
         license=openapi.License(name="BSD License"),
