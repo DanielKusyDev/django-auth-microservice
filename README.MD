@@ -4,20 +4,27 @@ Micro-service designed to perform identification, authentication and authorizati
 
 ## Prerequisites
  - Python 3.8
- - pip
+ - MySQL
+ - [microservice-email](https://github.com/DanielKusyDev/microservice-email)
  
 ## Usage
 
- - Run Postgres
- - Add `local_settings.py` inside `core` directory.
- - Generate secret key:
+- Run required services
+- Set environment variables or put them into `.env` file inside `core` directory. You can find variables in the `settings.py` file.
+You can generate your SECRET_KEY by simple python command:
 ```
 python -c 'import random; result = "".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)]); print(result)'
 ```
- - Fill `local_settings.py` with given secret key and your db settings if they are different than those in main settings
-  file.
- 
+- Migrate
+```
+python manage.py migrate
+```
+- Set DJANGO_SETTINGS_MODULE environment variable and run tests
+ ```
+ export DJANGO_SETTINGS_MODULE=core.settings # may differ due to the structure of the project files
+ pytest
+```
  - Run server
  ```
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
