@@ -4,9 +4,11 @@ from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPass
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.swagger_utils import users_id_schema
 from apps.users import serializers
+from apps.users.serializers import JwtTokenSerializer
 from common.views import ModelViewSet, APIView
 
 User = get_user_model()
@@ -78,6 +80,10 @@ class ResetPasswordTokenApiView(APIView, ResetPasswordRequestToken):
     def post(self, *args, **kwargs):
         self.redirect_url = self.request.data.get('redirect_url')
         return super().post(*args, **kwargs)
+
+
+class JwtTokenView(TokenObtainPairView):
+    serializer_class = JwtTokenSerializer
 
 
 reset_password_request_token = ResetPasswordTokenApiView.as_view()
