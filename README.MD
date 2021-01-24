@@ -31,4 +31,4 @@ python manage.py runserver 0.0.0.0:8000
 
  - Visit swagger page at `/docs` to find all endpoints
 
-![](https://imgur.com/bV2c2f5)
+![](https://imgur.com/bV2c2f5.jpg)
