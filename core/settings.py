@@ -16,6 +16,9 @@ DB_HOST = os.getenv("DB_HOST", "")
 DB_PORT = os.getenv("DB_PORT", "")
 MAILING_URL = os.getenv('MAILING_URL', "")
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+JWT_SIGNING_KEY_FILE_PATH = os.getenv("JWT_SIGNING_KEY_FILE_PATH")
+JWT_VERIFYING_KEY_FILE_PATH = os.getenv("JWT_VERIFYING_KEY_FILE_PATH", "")  # leave it empty if JWT_ALGORITHM is HMAC
 
 if ALLOWED_HOSTS:
     ALLOWED_HOSTS = ALLOWED_HOSTS.split(",")
@@ -101,7 +104,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -147,7 +149,14 @@ AUTH_USER_MODEL = 'users.User'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=3),
+    'ALGORITHM': JWT_ALGORITHM,
 }
+with open(JWT_SIGNING_KEY_FILE_PATH, "r") as f:
+    SIMPLE_JWT['SIGNING_KEY'] = f.read()
+
+if JWT_ALGORITHM[:2].upper() == "HS":
+    with open(JWT_VERIFYING_KEY_FILE_PATH, "r") as f:
+        SIMPLE_JWT["VERIFYING_KEY"] = f.read()
 
 # Micro-services
 MAILING_BASE_PATH = '/api/v1'
