@@ -5,6 +5,7 @@ from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.users.views import JwtTokenView
+from core.settings import BASE_API_URL
 
 schema_view = get_schema_view(
     info=openapi.Info(
@@ -19,7 +20,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='docs'),
-    path('token/', JwtTokenView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('', include('apps.users.urls', namespace='users'))
+    path(f'{BASE_API_URL}token/', JwtTokenView.as_view(), name='token_obtain_pair'),
+    path(f'{BASE_API_URL}token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path(f'{BASE_API_URL}', include('apps.users.urls', namespace='users'))
 ]
