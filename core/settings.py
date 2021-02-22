@@ -16,7 +16,7 @@ DB_HOST = os.getenv("DB_HOST", "")
 DB_PORT = os.getenv("DB_PORT", "")
 MAILING_URL = os.getenv('MAILING_URL', "")
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "")
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_SIGNING_KEY_FILE_PATH = os.getenv("JWT_SIGNING_KEY_FILE_PATH")
 JWT_VERIFYING_KEY_FILE_PATH = os.getenv("JWT_VERIFYING_KEY_FILE_PATH", "")  # leave it empty if JWT_ALGORITHM is HMAC
 BASE_API_URL = os.getenv("BASE_API_URL", "auth/api/")
@@ -156,7 +156,7 @@ SIMPLE_JWT = {
 with open(JWT_SIGNING_KEY_FILE_PATH, "r") as f:
     SIMPLE_JWT['SIGNING_KEY'] = f.read()
 
-if JWT_ALGORITHM[:2].upper() == "HS":
+if JWT_ALGORITHM[:2].upper() == "RS":
     with open(JWT_VERIFYING_KEY_FILE_PATH, "r") as f:
         SIMPLE_JWT["VERIFYING_KEY"] = f.read()
 
