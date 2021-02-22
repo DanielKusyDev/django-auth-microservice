@@ -152,6 +152,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=3),
     'ALGORITHM': JWT_ALGORITHM,
 }
+
 with open(JWT_SIGNING_KEY_FILE_PATH, "r") as f:
     SIMPLE_JWT['SIGNING_KEY'] = f.read()
 
