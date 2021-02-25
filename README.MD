@@ -4,7 +4,7 @@ Micro-service designed to perform identification, authentication and authorizati
 
 ## Prerequisites
  - Python 3.8
- - MySQL
+ - PostgreSQL
  - [microservice-email](https://github.com/DanielKusyDev/microservice-email)
  
 ## Usage

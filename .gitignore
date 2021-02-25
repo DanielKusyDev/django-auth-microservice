@@ -1,4 +1,5 @@
 core/.env
+.env
 celerybeat-schedule
 rabbit_mq/
 db/
