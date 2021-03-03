@@ -1,16 +1,24 @@
-FROM python:3.8-slim
+# pull official base image
+FROM python:3.8
 
-ENV APP_DIR /code
-RUN mkdir -p $APP_DIR
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install psycopg2 dependencies
+RUN apt update && apt install -y postgresql gcc python3-dev musl-dev libglib2.0-0 libgl1-mesa-glx libpq-dev
 
 RUN touch /tmp/jwt_fake_key
 ENV JWT_SIGNING_KEY_FILE_PATH=/tmp/jwt_fake_key
 
-WORKDIR $APP_DIR
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN apt update && apt install -y postgresql libpq-dev python3-dev gcc libglib2.0-0 libgl1-mesa-glx
+# copy project
+COPY . .
 
-COPY requirements.txt $APP_DIR/
-RUN pip install -q -r requirements.txt
-
-COPY . $APP_DIR/
