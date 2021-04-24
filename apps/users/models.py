@@ -1,11 +1,11 @@
-from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
+from apps.users.services import TimeSinceLoginService
+from common import time_as_dict
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-
-from apps.users.services import TimeSinceLoginService
-from common import time_as_dict
 
 
 class UserManager(DjangoUserManager):

@@ -1,15 +1,15 @@
+from apps.swagger_utils import users_id_schema
+from apps.users import serializers
+from apps.users.serializers import JwtTokenSerializer
+from common.views import APIView, ModelViewSet
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPasswordConfirm
+from django_rest_passwordreset.views import (ResetPasswordConfirm,
+                                             ResetPasswordRequestToken)
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from apps.swagger_utils import users_id_schema
-from apps.users import serializers
-from apps.users.serializers import JwtTokenSerializer
-from common.views import ModelViewSet, APIView
 
 User = get_user_model()
 

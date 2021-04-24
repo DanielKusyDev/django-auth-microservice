@@ -1,12 +1,11 @@
 import pytest
+from common import views
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rules.predicates import NO_VALUE
-
-from common import views
 
 User = get_user_model()
 

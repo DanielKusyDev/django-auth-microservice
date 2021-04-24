@@ -1,11 +1,10 @@
-from django.urls import path, include
+from apps.users.views import JwtTokenView
+from core.settings import BASE_API_URL
+from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
-
-from apps.users.views import JwtTokenView
-from core.settings import BASE_API_URL
 
 schema_view = get_schema_view(
     info=openapi.Info(

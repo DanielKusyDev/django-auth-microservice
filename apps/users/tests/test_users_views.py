@@ -1,6 +1,7 @@
 from contextlib import nullcontext
 
 import pytest
+from apps.users import serializers, views
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -8,8 +9,6 @@ from django.test import RequestFactory
 from django.urls import reverse
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.test import force_authenticate
-
-from apps.users import views, serializers
 
 User = get_user_model()
 

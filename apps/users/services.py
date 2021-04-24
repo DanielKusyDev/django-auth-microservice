@@ -2,13 +2,12 @@ import abc
 import datetime
 import logging
 
+from apps.users.api_services import MailingApiService
 from django.conf import settings
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.signals import reset_password_token_created
-
-from apps.users.api_services import MailingApiService
 
 
 class BaseTimeSinceLoginService(abc.ABC):
