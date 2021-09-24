@@ -1,2 +1,2 @@
-poetry run black .
-poetry run isort .
+run black .
+run isort .
