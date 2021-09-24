@@ -1,5 +1,5 @@
-# pull official base image
-FROM arm32v7/python:3.8
+ARG python_image
+FROM $python_image
 
 # set work directory
 WORKDIR /usr/src/app
