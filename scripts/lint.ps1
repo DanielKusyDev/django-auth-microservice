@@ -1,0 +1,2 @@
+isort . --check
+black . --check

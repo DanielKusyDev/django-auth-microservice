@@ -1,0 +1,2 @@
+run black .
+run isort .
