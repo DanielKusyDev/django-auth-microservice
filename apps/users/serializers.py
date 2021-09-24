@@ -11,9 +11,9 @@ User = get_user_model()
 
 class UserSerializerMeta:
     model = User
-    fields = ('id', 'username', 'email', 'password', 'password2')
+    fields = ("id", "username", "email", "password", "password2")
     extra_kwargs = {
-        'password': {'write_only': True},
+        "password": {"write_only": True},
     }
 
 
@@ -24,16 +24,16 @@ class UserSerializer(serializers.ModelSerializer):
         ...
 
     def validate_password2(self, password2):
-        if self.initial_data['password'] != password2:
-            raise ValidationError(_('Passwords do not match.'))
+        if self.initial_data["password"] != password2:
+            raise ValidationError(_("Passwords do not match."))
         return password2
 
     def validate(self, attrs):
-        if not self.instance and not attrs.get('password2'):
+        if not self.instance and not attrs.get("password2"):
             try:
-                self.fields['password2'].fail('required')
+                self.fields["password2"].fail("required")
             except ValidationError as exc:
-                raise ValidationError({'password2': exc.detail})
+                raise ValidationError({"password2": exc.detail})
         return attrs
 
     def create(self, validated_data):
@@ -41,14 +41,14 @@ class UserSerializer(serializers.ModelSerializer):
         return self._create_user(validated_data)
 
     def _create_user(self, data):
-        request = self.context.get('request')
-        query_params_available = hasattr(request, 'query_params')
-        if request and query_params_available and request.query_params.get('is_staff'):
+        request = self.context.get("request")
+        query_params_available = hasattr(request, "query_params")
+        if request and query_params_available and request.query_params.get("is_staff"):
             return User.objects.create_staff(**data)
         return User.objects.create_user(**data)
 
     def update(self, instance, validated_data):
-        validated_data['password'] = make_password(validated_data['password'])
+        validated_data["password"] = make_password(validated_data["password"])
         return super().update(instance, validated_data)
 
 
@@ -58,28 +58,30 @@ class ChangePasswordSerializer(UserSerializer):
     def validate_old_password(self, old_password):
         errors = []
         if not self.instance.check_password(old_password):
-            errors.append(_('Old password do not match.'))
-        if old_password == self.initial_data['password']:
-            errors.append(_('Your new password must be different from your previous password.'))
+            errors.append(_("Old password do not match."))
+        if old_password == self.initial_data["password"]:
+            errors.append(
+                _("Your new password must be different from your previous password.")
+            )
         if errors:
             raise ValidationError(errors)
         return old_password
 
     class Meta:
         model = User
-        fields = ('password', 'password2', 'old_password')
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ("password", "password2", "old_password")
+        extra_kwargs = {"password": {"write_only": True}}
 
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('name', )
+        fields = ("name",)
 
 
 class JwtTokenSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['username'] = user.username
+        token["username"] = user.username
         return token

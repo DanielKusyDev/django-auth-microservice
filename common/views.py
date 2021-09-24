@@ -8,7 +8,7 @@ from rules.predicates import NO_VALUE
 
 
 class APIView(GenericAPIView):
-    permission_required = ['allow_any']
+    permission_required = ["allow_any"]
     lookup_url_kwarg = "pk"
     kwargs = {}
 
@@ -20,8 +20,8 @@ class APIView(GenericAPIView):
     def get_permission_required(self):
         if self.permission_required is None:
             raise ImproperlyConfigured(
-                '{0} is missing the permission_required attribute. Define {0}.permission_required, or override '
-                '{0}.get_permission_required().'.format(self.__class__.__name__)
+                "{0} is missing the permission_required attribute. Define {0}.permission_required, or override "
+                "{0}.get_permission_required().".format(self.__class__.__name__)
             )
         if isinstance(self.permission_required, str):
             perms = (self.permission_required,)
@@ -71,11 +71,12 @@ class ViewSet(ViewSetMixin, APIView):
         return []
 
 
-class ModelViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   ViewSet):
+class ModelViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    ViewSet,
+):
     filter_backends = (DjangoFilterBackend,)
-

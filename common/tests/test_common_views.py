@@ -11,7 +11,9 @@ from common import views
 User = get_user_model()
 
 
-@pytest.mark.parametrize('perm', ["test", ["test"], ("test",), {"wrong_action": "test"}])
+@pytest.mark.parametrize(
+    "perm", ["test", ["test"], ("test",), {"wrong_action": "test"}]
+)
 def test_permission_required_mixin(perm, mock_request):
     api_view = views.APIView()
     api_view.request = mock_request
@@ -20,10 +22,13 @@ def test_permission_required_mixin(perm, mock_request):
     assert isinstance(permissions, tuple) or isinstance(permissions, list)
 
 
-@pytest.mark.parametrize("perm, error", [
-    (None, ImproperlyConfigured),
-    ({1: 2}, AttributeError),
-])
+@pytest.mark.parametrize(
+    "perm, error",
+    [
+        (None, ImproperlyConfigured),
+        ({1: 2}, AttributeError),
+    ],
+)
 def test_api_required_permissions(perm, error, mock_request):
     api_view = views.APIView()
     api_view.request = mock_request
@@ -63,11 +68,14 @@ def test_base_api_view_no_object_found(monkeypatch, mock_request):
     api_view.check_permissions(mock_request)
 
 
-@pytest.mark.parametrize("action, perms, expected_perms", [
-    (None, None, []),
-    ("list", {"list": "test"}, ("test",)),
-    ("list", {"create": "test"}, ()),
-])
+@pytest.mark.parametrize(
+    "action, perms, expected_perms",
+    [
+        (None, None, []),
+        ("list", {"list": "test"}, ("test",)),
+        ("list", {"create": "test"}, ()),
+    ],
+)
 def test_base_viewset_dict_perms(action, perms, expected_perms):
     viewset = views.ViewSet()
     viewset.action = action
