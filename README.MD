@@ -32,3 +32,22 @@ python manage.py runserver 0.0.0.0:8000
  - Visit swagger page at `/docs` to find all endpoints
 
 ![](https://imgur.com/bV2c2f5.jpg)
+
+## Environment Variables
+| NAME                        | TYPE   | REQUIRED | DEFAULT   |
+|-----------------------------|--------|----------|-----------|
+| SECRET_KEY                  | string | X        | N/A       |
+| DEBUG                       | bool   |          | false     |
+| ALLOWED_HOSTS               | list   | X        | N/A       |
+| DB_DRIVER                   | string | X        | N/A       |
+| DB_NAME                     | string | X        | N/A       |
+| DB_USER                     | string |          | N/A       |
+| DB_PASSWORD                 | string |          | N/A       |
+| DB_PORT                     | number |          | N/A       |
+| DB_HOST                     | string |          | N/A       |
+| CORS_ALLOWED_ORIGINS        | list   |          | N/A       |
+| MAILING_URL                 | string |          | N/A       |
+| JWT_ALGORITHM               | string | X        | HS256     |
+| JWT_SIGNING_KEY_FILE_PATH   | string | X        | N/A       |
+| JWT_VERIFYING_KEY_FILE_PATH | string |          | N/A       |
+| BASE_API_URL                | string |          | auth/api/ |

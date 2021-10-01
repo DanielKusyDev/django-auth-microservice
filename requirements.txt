@@ -12,7 +12,7 @@ django-cors-headers==3.5.0
 django-filter==2.4.0
 django-rest-passwordreset==1.1.0
 djangorestframework>=3.11.2
-djangorestframework-simplejwt==4.4.0
+djangorestframework-simplejwt==4.8.0
 drf-yasg==1.20.0
 freezegun==1.0.0
 idna==2.10
@@ -27,7 +27,7 @@ pluggy==0.13.1
 psycopg2-binary==2.8.6
 py>=1.10.0
 pycparser==2.20
-PyJWT==1.7.1
+PyJWT==2.1.0
 pyparsing==2.4.7
 pytest==6.1.1
 pytest-django==3.10.0
