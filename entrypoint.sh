@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 echo "Waiting for db"
 until PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST --user $DB_USER -c '\q'; do
   echo "PostgreSQL unavailable (code=$?)"
