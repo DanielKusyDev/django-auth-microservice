@@ -2,6 +2,8 @@
 
 Micro-service designed to perform identification, authentication and authorization.
 
+
+
 ## General structure
 The application consists of one `users` CRUD module. It's meant to provide a straightforward interface for managing users including features like groups management, login & logout and retrieving lost password.
 Models are simple, just extended version of built-in `AbstractUser` with additional field for date of suspension. Urls namespace includes endpoints for user & staff management, groups and passwords.
@@ -45,6 +47,12 @@ API is documented in form of Swagger schema. See `/docs` for all endpoints.
  
 ## Usage
 
+https://pypi.org/project/drf-micro-auth/0.1/
+
+- Installation
+```
+pip install drf-micro-auth==0.1
+```
 - Run required services
 - Set environment variables or put them into `.env` file inside `core` directory. You can find variables in the `settings.py` file.
 You can generate your SECRET_KEY by simple python command:
